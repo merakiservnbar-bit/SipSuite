@@ -2,6 +2,7 @@ import { useState } from "react";
 import { db } from "../../services/firebase";
 import { addDoc, collection, getDocs } from "firebase/firestore";
 import { useEffect } from "react";
+import QRCodeDisplay from "../../components/QRCodeDisplay";
 
 export default function AdminPage() {
   const [eventName, setEventName] = useState("");
@@ -68,9 +69,11 @@ export default function AdminPage() {
 
     {/* ✅ STEP 5 GOES RIGHT HERE */}
     {selectedEventId && (
-      <p style={{ marginTop: 10 }}>
-        Managing Event: {selectedEventId}
-      </p>
+        <div style={{ marginTop: 20 }}>
+            <p>Managing Event: {selectedEventId}</p>
+
+            <QRCodeDisplay eventId={selectedEventId} />
+        </div>
     )}
 
     {/* 🔽 CREATE EVENT */}
