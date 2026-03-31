@@ -61,6 +61,7 @@ export default function EventOverview({ eventId }) {
                 a.download = "qr-code.png";
                 a.click();
             }}
+            style={{marginLeft:10}}
         >
             Download QR
         </button>
