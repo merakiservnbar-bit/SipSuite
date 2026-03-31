@@ -3,6 +3,7 @@ import { db } from "../../services/firebase";
 import { addDoc, collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { useEffect } from "react";
 import QRCodeDisplay from "../../components/QRCodeDisplay";
+import Section from "../../components/ui/Section";
 
 export default function AdminPage() {
     const [eventName, setEventName] = useState("");
@@ -146,133 +147,143 @@ export default function AdminPage() {
     }, [selectedEventId]);
 
     return (
-        <div style={{ padding: 20 }}>
-            <h1>Admin Dashboard</h1>
+        <div
+            style={{
+            padding: 30,
+            maxWidth: 900,
+            margin: "0 auto"
+            }}
+        >
+            <h1 style={{ marginBottom: 20 }}>Admin Dashboard</h1>
 
-            {/* 🔽 STEP 2 — EVENT SELECTOR */}
-            <h2>Select Event</h2>
-
-            {events.map(event => (
-                <div key={event.id} style={{ marginBottom: 10 }}>
-                    <button onClick={() => setSelectedEventId(event.id)}>
-                        {event.name}
+            <Section title="Select Event">
+                {events.map(event => (
+                    <button
+                    key={event.id}
+                    onClick={() => setSelectedEventId(event.id)}
+                    style={{ marginRight: 10, marginBottom: 10 }}
+                    >
+                    {event.name}
                     </button>
-                </div>
-            ))}
+                ))}
+            </Section>
 
-            {/* ✅ STEP 5 GOES RIGHT HERE */}
             {selectedEventId && (
-                <div style={{ marginTop: 20 }}>
-                    <p>Managing Event: {selectedEventId}</p>
-
+                <Section title="Current Event">
+                    <p>{selectedEventId}</p>
                     <QRCodeDisplay eventId={selectedEventId} />
-                </div>
+                </Section>
             )}
 
-            {/* 🔽 CREATE EVENT */}
-            <h2>Create Event</h2>
-            <input
-                placeholder="Event name"
-                value={eventName}
-                onChange={(e) => setEventName(e.target.value)}
-            />
-            <button onClick={createEvent}>Create Event</button>
+            <Section title="Create Event">
+                <input
+                    placeholder="Event name"
+                    value={eventName}
+                    onChange={(e) => setEventName(e.target.value)}
+                    style={{ marginRight: 10 }}
+                />
+                <button onClick={createEvent}>Create</button>
+            </Section>
 
-            {/* 🔽 ADD BAR */}
-            <h2>Add Bar</h2>
-            <input
-                placeholder="Bar name"
-                value={barName}
-                onChange={(e) => setBarName(e.target.value)}
-            />
-            <button onClick={createBar}>Add Bar</button>
+            <Section title="Bars">
+                <input
+                    placeholder="Bar name"
+                    value={barName}
+                    onChange={(e) => setBarName(e.target.value)}
+                />
+                <button onClick={createBar} style={{ marginLeft: 10 }}>
+                    Add
+                </button>
 
-            {/* 🔽 ADD DRINK */}
-            <h2>Add Drink</h2>
-            <input
-                placeholder="Drink name"
-                value={drinkName}
-                onChange={(e) => setDrinkName(e.target.value)}
-            />
-            <button onClick={createMenuItem}>Add Drink</button>
-
-            <h2>Bars</h2>
-
-            {bars.map(bar => (
-                <div key={bar.id} style={{ marginBottom: 10 }}>
-                    
-                    {editingBarId === bar.id ? (
-                    <>
-                        <input
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        />
-                        <button onClick={() => updateBar(bar.id)}>Save</button>
-                    </>
-                    ) : (
-                    <>
+                <div style={{ marginTop: 15 }}>
+                    {bars.map(bar => (
+                    <div
+                        key={bar.id}
+                        style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: 10
+                        }}
+                    >
                         <span>{bar.name}</span>
 
+                        <div>
                         <button
-                        onClick={() => {
+                            onClick={() => {
                             setEditingBarId(bar.id);
-                            setEditValue(bar.name);
-                        }}
-                        style={{ marginLeft: 10 }}
+                            setEditBarValue(bar.name);
+                            }}
                         >
-                        Edit
+                            Edit
                         </button>
 
                         <button
-                        onClick={() => deleteBar(bar.id)}
-                        style={{ marginLeft: 10, background: "red", color: "white" }}
+                            onClick={() => deleteBar(bar.id)}
+                            style={{ marginLeft: 10, background: "red", color: "white" }}
                         >
-                        Delete
+                            Delete
                         </button>
-                    </>
-                    )}
-                    
+                        </div>
+                    </div>
+                    ))}
                 </div>
-            ))}
+            </Section>
 
-            <h2>Menu Items</h2>
+            <Section title="Menu">
+                <input
+                    placeholder="Drink name"
+                    value={drinkName}
+                    onChange={(e) => setDrinkName(e.target.value)}
+                />
+                <button onClick={createMenuItem} style={{ marginLeft: 10 }}>
+                    Add
+                </button>
 
-            {menuItems.map(item => (
-                <div key={item.id} style={{ marginBottom: 10 }}>
-                    
-                    {editingItemId === item.id ? (
-                    <>
-                        <input
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        />
-                        <button onClick={() => updateMenuItem(item.id)}>Save</button>
-                    </>
-                    ) : (
-                    <>
-                        <span>{item.name}</span>
-
-                        <button
-                        onClick={() => {
-                            setEditingItemId(item.id);
-                            setEditValue(item.name);
+                <div style={{ marginTop: 15 }}>
+                    {menuItems.map(item => (
+                    <div
+                        key={item.id}
+                        style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: 10
                         }}
-                        style={{ marginLeft: 10 }}
-                        >
-                        Edit
-                        </button>
+                    >
+                        {editingItemId === item.id ? (
+                        <>
+                            <input
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            />
+                            <button onClick={() => updateMenuItem(item.id)}>Save</button>
+                        </>
+                        ) : (
+                        <>
+                            <span>{item.name}</span>
 
-                        <button
-                        onClick={() => deleteMenuItem(item.id)}
-                        style={{ marginLeft: 10, background: "red", color: "white" }}
-                        >
-                        Delete
-                        </button>
-                    </>
-                    )}
-                    
+                            <div>
+                            <button
+                                onClick={() => {
+                                setEditingItemId(item.id);
+                                setEditValue(item.name);
+                                }}
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                onClick={() => deleteMenuItem(item.id)}
+                                style={{ marginLeft: 10, background: "red", color: "white" }}
+                            >
+                                Delete
+                            </button>
+                            </div>
+                        </>
+                        )}
+                    </div>
+                    ))}
                 </div>
-            ))}
+            </Section>
         </div>
     );
 }
