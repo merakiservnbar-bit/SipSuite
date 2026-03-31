@@ -1,7 +1,7 @@
 import {QRCodeCanvas} from "qrcode.react";
 
 export default function QRCodeDisplay({ eventId }) {
-  const url = `sip-suite-fx4yv5smk-merakiservnbar-bits-projects.vercel.app/event/${eventId}`;
+  const url = `https://sip-suite-fx4yv5smk-merakiservnbar-bits-projects.vercel.app/event/${eventId}`;
 
   return (
     <div style={{ padding: 20 }}>
