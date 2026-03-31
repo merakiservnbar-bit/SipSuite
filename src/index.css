@@ -1,0 +1,19 @@
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background-color: #0f0f10;
+  color: #ffffff;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 500;
+}
+
+button:hover {
+  opacity: 0.9;
+  transition: 0.2s ease;
+}
