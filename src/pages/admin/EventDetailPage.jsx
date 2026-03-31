@@ -1,23 +1,32 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
-import QRCodeDisplay from "../../components/QRCodeDisplay";
+import EventOverview from "../../components/admin/EventOverview";
+import MenuEditor from "../../components/admin/MenuEditor";
 
 export default function EventDetailPage() {
   const { eventId } = useParams();
+  const [activeTab, setActiveTab] = useState("overview");
 
   return (
     <div>
       <h1>Event</h1>
 
       {/* Tabs */}
-      <div style={{ display: "flex", gap: 20 }}>
-        <button>Overview</button>
-        <button>Menu</button>
+      <div style={{ display: "flex", gap: 20, marginBottom: 20 }}>
+        <button onClick={() => setActiveTab("overview")}>Overview</button>
+        <button onClick={() => setActiveTab("menu")}>Menu</button>
         <button>Staff</button>
         <button>Analytics</button>
       </div>
 
-      <h2>Overview</h2>
-      <QRCodeDisplay eventId={eventId} />
+      {/* Views */}
+      {activeTab === "overview" && (
+        <EventOverview eventId={eventId} />
+      )}
+
+      {activeTab === "menu" && (
+        <MenuEditor eventId={eventId} />
+      )}
     </div>
   );
 }
