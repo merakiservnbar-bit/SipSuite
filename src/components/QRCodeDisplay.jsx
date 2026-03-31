@@ -26,7 +26,7 @@ export default function QRCodeDisplay({ eventId }) {
           display: "inline-block"
         }}
       >
-        <QRCodeCanvas value={url} size={220} />
+        <QRCodeCanvas value={url} size={220} id="qr-code" />
       </div>
 
       <p style={{ marginTop: 20, fontSize: 12 }}>
