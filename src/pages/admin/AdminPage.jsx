@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { db, deleteDoc, doc } from "../../services/firebase";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "../../services/firebase";
+import { addDoc, collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { useEffect } from "react";
 import QRCodeDisplay from "../../components/QRCodeDisplay";
 
