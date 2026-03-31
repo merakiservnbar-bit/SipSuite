@@ -50,6 +50,20 @@ export default function EventOverview({ eventId }) {
         >
           Copy Link
         </button>
+
+        <button
+            onClick={() => {
+                const canvas = document.getElementById("qr-code");
+                const url = canvas.toDataURL("image/png");
+
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "qr-code.png";
+                a.click();
+            }}
+        >
+            Download QR
+        </button>
       </div>
     </div>
   );
