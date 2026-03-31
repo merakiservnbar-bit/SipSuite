@@ -224,7 +224,7 @@ export default function AdminPage() {
                         </button>
 
                         <button
-                        onClick={() => deleteBar(item.id)}
+                        onClick={() => deleteBar(bar.id)}
                         style={{ marginLeft: 10, background: "red", color: "white" }}
                         >
                         Delete
