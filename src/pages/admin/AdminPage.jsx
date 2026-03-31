@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { db } from "../../services/firebase";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { useEffect } from "react";
 
 export default function AdminPage() {
   const [eventName, setEventName] = useState("");
   const [createdEventId, setCreatedEventId] = useState(null);
   const [barName, setBarName] = useState("");
   const [drinkName, setDrinkName] = useState("");
+  const [events, setEvents] = useState([]);
+  const [selectedEventId, setSelectedEventId] = useState(null);
 
   const createEvent = async () => {
     const docRef = await addDoc(collection(db, "events"), {
@@ -14,59 +17,88 @@ export default function AdminPage() {
       status: "active"
     });
 
-    setCreatedEventId(docRef.id);
+    setSelectedEventId(docRef.id);
   };
 
   const createBar = async () => {
     await addDoc(collection(db, "bars"), {
         name: barName,
-        event_id: createdEventId
+        event_id: selectedEventId
     });
   };
 
   const createMenuItem = async () => {
     await addDoc(collection(db, "menu_items"), {
         name: drinkName,
-        event_id: createdEventId,
+        event_id: selectedEventId,
         category: "cocktails",
         price: 0
     });
   };
 
+  useEffect(() => {
+    const fetchEvents = async () => {
+        const snapshot = await getDocs(collection(db, "events"));
+
+        const data = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+        setEvents(data);
+    };
+
+    fetchEvents();
+  }, []);
+
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Admin Dashboard</h1>
+  <div style={{ padding: 20 }}>
+    <h1>Admin Dashboard</h1>
 
-      <h2>Create Event</h2>
-      <input
-        placeholder="Event name"
-        value={eventName}
-        onChange={(e) => setEventName(e.target.value)}
-      />
+    {/* 🔽 STEP 2 — EVENT SELECTOR */}
+    <h2>Select Event</h2>
 
-      <h2>Add Bar</h2>
-      <input
-        placeholder="Bar Name"
-        value={barName}
-        onChange={(e) => setBarName(e.target.value)}
-      />
+    {events.map(event => (
+      <div key={event.id} style={{ marginBottom: 10 }}>
+        <button onClick={() => setSelectedEventId(event.id)}>
+          {event.name}
+        </button>
+      </div>
+    ))}
 
-      <button onClick={createBar}>Add Bar</button>
+    {/* ✅ STEP 5 GOES RIGHT HERE */}
+    {selectedEventId && (
+      <p style={{ marginTop: 10 }}>
+        Managing Event: {selectedEventId}
+      </p>
+    )}
 
-      <h2>Add Drink</h2>
-      <input
-        placeholder="Drink Name"
-        value={drinkName}
-        onChange={(e) => setDrinkName(e.target.value)}
-      />
+    {/* 🔽 CREATE EVENT */}
+    <h2>Create Event</h2>
+    <input
+      placeholder="Event name"
+      value={eventName}
+      onChange={(e) => setEventName(e.target.value)}
+    />
+    <button onClick={createEvent}>Create Event</button>
 
-      <button onClick={createMenuItem}>Add Drink</button>
+    {/* 🔽 ADD BAR */}
+    <h2>Add Bar</h2>
+    <input
+      placeholder="Bar name"
+      value={barName}
+      onChange={(e) => setBarName(e.target.value)}
+    />
+    <button onClick={createBar}>Add Bar</button>
 
-      <button onClick={createEvent}>Create Event</button>
-
-      {createdEventId && (
-        <p>Event Created: {createdEventId}</p>
-      )}
-    </div>
-  );
+    {/* 🔽 ADD DRINK */}
+    <h2>Add Drink</h2>
+    <input
+      placeholder="Drink name"
+      value={drinkName}
+      onChange={(e) => setDrinkName(e.target.value)}
+    />
+    <button onClick={createMenuItem}>Add Drink</button>
+  </div>
+);
 }
