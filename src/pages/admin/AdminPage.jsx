@@ -4,6 +4,7 @@ import { addDoc, collection, getDocs, deleteDoc, doc, updateDoc } from "firebase
 import { useEffect } from "react";
 import QRCodeDisplay from "../../components/QRCodeDisplay";
 import Section from "../../components/ui/Section";
+import EventCard from "../../components/EventCard";
 
 export default function AdminPage() {
     const [eventName, setEventName] = useState("");
@@ -17,10 +18,18 @@ export default function AdminPage() {
     const [editValue, setEditValue] = useState("");
     const [editingBarId, setEditingBarId] = useState(null);
     const [editBarValue, setEditBarValue] = useState("");
+    const [location, setLocation] = useState("");
+    const [date, setDate] = useState("");
+    const [startTime, setStartTime] = useState("");
+    const [endTime, setEndTime] = useState("");
 
     const createEvent = async () => {
         const docRef = await addDoc(collection(db, "events"), {
             name: eventName,
+            location,
+            date,
+            start_time: startTime,
+            end_time: endTime,
             status: "active"
         });
 
@@ -146,6 +155,22 @@ export default function AdminPage() {
         fetchMenuItems();
     }, [selectedEventId]);
 
+    if (!selectedEventId) {
+        return (
+            <div style={{ padding: 30 }}>
+            <h1>Events</h1>
+
+            {events.map(event => (
+                <EventCard
+                key={event.id}
+                event={event}
+                onClick={() => setSelectedEventId(event.id)}
+                />
+            ))}
+            </div>
+        );
+    }
+
     return (
         <div
             style={{
@@ -156,15 +181,13 @@ export default function AdminPage() {
         >
             <h1 style={{ marginBottom: 20 }}>Admin Dashboard</h1>
 
-            <Section title="Select Event">
+            <Section title="Events">
                 {events.map(event => (
-                    <button
+                    <EventCard
                     key={event.id}
+                    event={event}
                     onClick={() => setSelectedEventId(event.id)}
-                    style={{ marginRight: 10, marginBottom: 10 }}
-                    >
-                    {event.name}
-                    </button>
+                    />
                 ))}
             </Section>
 
@@ -176,12 +199,11 @@ export default function AdminPage() {
             )}
 
             <Section title="Create Event">
-                <input
-                    placeholder="Event name"
-                    value={eventName}
-                    onChange={(e) => setEventName(e.target.value)}
-                    style={{ marginRight: 10 }}
-                />
+                <input placeholder="Event name" onChange={e => setEventName(e.target.value)} />
+                <input placeholder="Location" onChange={e => setLocation(e.target.value)} />
+                <input type="date" onChange={e => setDate(e.target.value)} />
+                <input type="time" onChange={e => setStartTime(e.target.value)} />
+                <input type="time" onChange={e => setEndTime(e.target.value)} />
                 <button onClick={createEvent}>Create</button>
             </Section>
 
@@ -230,6 +252,10 @@ export default function AdminPage() {
             </Section>
 
             <Section title="Menu">
+
+                <button onClick={() => setSelectedEventId(null)}>
+                    ← Back to Events
+                </button>
                 <input
                     placeholder="Drink name"
                     value={drinkName}
