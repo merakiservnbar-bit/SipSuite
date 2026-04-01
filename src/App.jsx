@@ -12,6 +12,7 @@ function App() {
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<EventsPage />} />
         <Route path="events/:eventId" element={<EventDetailPage />} />
+        <Route path="/admin/staff" element={<StaffPage />} />
       </Route>
       <Route path="/event/:eventId" element={<EventPage />} />
       <Route path="/bartender" element={<BartenderPage />} />

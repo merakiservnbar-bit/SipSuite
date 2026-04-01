@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import EventOverview from "../../components/admin/EventOverview";
 import MenuEditor from "../../components/admin/MenuEditor";
+import BarsManager from "../../components/admin/BarsManager";
 
 export default function EventDetailPage() {
   const { eventId } = useParams();
@@ -15,7 +16,8 @@ export default function EventDetailPage() {
       <div style={{ display: "flex", gap: 20, marginBottom: 20 }}>
         <button onClick={() => setActiveTab("overview")}>Overview</button>
         <button onClick={() => setActiveTab("menu")}>Menu</button>
-        <button>Staff</button>
+        <button onClick={() => setActiveTab("bars")}>Bars</button>
+        <button onClick={() => setActiveTab("staff")}>Staff</button>
         <button>Analytics</button>
       </div>
 
@@ -26,6 +28,10 @@ export default function EventDetailPage() {
 
       {activeTab === "menu" && (
         <MenuEditor eventId={eventId} />
+      )}
+
+      {activeTab === "bars" && (
+        <BarsManager eventId={eventId} />
       )}
     </div>
   );
