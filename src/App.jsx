@@ -5,6 +5,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import EventsPage from "./pages/admin/EventsPage";
 import EventDetailPage from "./pages/admin/EventDetailPage";
 import StaffPage from "./pages/admin/StaffPage";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       </Route>
       <Route path="/event/:eventId" element={<EventPage />} />
       <Route path="/bartender" element={<BartenderPage />} />
+      <Route path="/login" element={<LoginPage />} />
     </Routes>
   );
 }
