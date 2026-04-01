@@ -95,7 +95,7 @@ export default function BarsManager({ eventId }) {
                   Edit
                 </button>
 
-                <button onClick={() => deleteBar(bar.id)}>
+                <button onClick={() => deleteBar(bar.id)} style={{ marginLeft: 10}}>
                   Delete
                 </button>
               </>
