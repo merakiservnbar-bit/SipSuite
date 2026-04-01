@@ -6,6 +6,7 @@ import {
   where,
   getDocs,
   addDoc,
+  onSnapshot
 } from "firebase/firestore";
 import OrderStatus from "./OrderStatus";
 import Button from "../../components/ui/Button";
@@ -25,23 +26,21 @@ export default function EventPage() {
   useEffect(() => {
     if (!eventId) return;
 
-    const fetchMenu = async () => {
-      const q = query(
-        collection(db, "menu_items"),
-        where("event_id", "==", eventId)
-      );
+    const q = query(
+      collection(db, "menu_items"),
+      where("event_id", "==", eventId)
+    );
 
-      const snapshot = await getDocs(q);
-
+    const unsubscribe = onSnapshot(q, (snapshot) => {
       const items = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
 
       setMenu(items);
-    };
+    });
 
-    fetchMenu();
+    return () => unsubscribe();
   }, [eventId]);
 
   useEffect(() => {
@@ -109,15 +108,18 @@ export default function EventPage() {
 
       <h1 style={{ marginBottom: 20 }}>Menu</h1>
 
-      {menu.map(item => (
-        <Card key={item.id}>
-          <p style={{ fontSize: 18 }}>{item.name}</p>
+      {menu
+        .filter(item => item.is_available !== false)
+        .map(item => (
+          <Card key={item.id}>
+            <p style={{ fontSize: 18 }}>{item.name}</p>
 
-          <Button onClick={() => placeOrder(item)}>
-            Add
-          </Button>
-        </Card>
-      ))}
+            <Button onClick={() => placeOrder(item)}>
+              Add
+            </Button>
+          </Card>
+        )
+      )}
 
       <h2>Select Pickup Bar</h2>
 

@@ -1,6 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import EventPage from "./pages/guest/EventPage";
-import BartenderPage from "./pages/bartender/BartenderPage";
+import BartenderEventsPage from "./pages/bartender/BartenderEventsPage";
+import BartenderEventPage from "./pages/bartender/BartenderEventPage";
+import BartenderLivePage from "./pages/bartender/BartenderLivePage";
 import AdminLayout from "./layouts/AdminLayout";
 import EventsPage from "./pages/admin/EventsPage";
 import EventDetailPage from "./pages/admin/EventDetailPage";
@@ -28,7 +30,23 @@ function App() {
         path="/bartender"
         element={
           <ProtectedRoute role="staff">
-            <BartenderPage />
+            <BartenderEventsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bartender/events/:eventId"
+        element={
+          <ProtectedRoute role="staff">
+            <BartenderEventPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bartender/events/:eventId/live"
+        element={
+          <ProtectedRoute role="staff">
+            <BartenderLivePage />
           </ProtectedRoute>
         }
       />

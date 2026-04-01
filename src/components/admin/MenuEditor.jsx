@@ -54,7 +54,8 @@ export default function MenuEditor({ eventId }) {
     await addDoc(collection(db, "menu_items"), {
       name: drinkName,
       event_id: eventId,
-      price: 0
+      price: 0,
+      is_available: true
     });
   };
 
