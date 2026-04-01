@@ -4,7 +4,7 @@ import BartenderPage from "./pages/bartender/BartenderPage";
 import AdminLayout from "./layouts/AdminLayout";
 import EventsPage from "./pages/admin/EventsPage";
 import EventDetailPage from "./pages/admin/EventDetailPage";
-import AdminPage from "./pages/admin/AdminPage";
+import StaffPage from "./pages/admin/StaffPage";
 
 function App() {
   return (
