@@ -15,6 +15,7 @@ export default function BarsManager({ eventId }) {
 
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState("");
+  const [staff, setStaff] = useState([]);
 
   useEffect(() => {
     if (!eventId) return;
@@ -62,6 +63,41 @@ export default function BarsManager({ eventId }) {
     setEditingId(null);
   };
 
+  const toggleStaffAssignment = async (barId, staffId, currentStaff = []) => {
+    let updated;
+
+    if (currentStaff.includes(staffId)) {
+      updated = currentStaff.filter(id => id !== staffId);
+    } else {
+      updated = [...currentStaff, staffId];
+    }
+
+    await updateDoc(doc(db, "bars", barId), {
+      staff_ids: updated
+    });
+
+    setBars(prev =>
+      prev.map(bar =>
+        bar.id === barId ? { ...bar, staff_ids: updated } : bar
+      )
+    );
+  };
+
+  useEffect(() => {
+    const fetchStaff = async () => {
+      const snapshot = await getDocs(collection(db, "staff"));
+
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      setStaff(data);
+    };
+
+    fetchStaff();
+  }, []);
+
   return (
     <div>
       <h2>Bars</h2>
@@ -75,31 +111,29 @@ export default function BarsManager({ eventId }) {
 
       <div style={{ marginTop: 20 }}>
         {bars.map(bar => (
-          <div key={bar.id} style={{ marginBottom: 10 }}>
-            {editingId === bar.id ? (
-              <>
-                <input
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                />
-                <button onClick={() => updateBar(bar.id)}>Save</button>
-              </>
-            ) : (
-              <>
-                <span>{bar.name}</span>
+          <div key={bar.id} style={{ marginBottom: 20 }}>
 
-                <button onClick={() => {
-                  setEditingId(bar.id);
-                  setEditValue(bar.name);
-                }}>
-                  Edit
-                </button>
+            <strong>{bar.name}</strong>
 
-                <button onClick={() => deleteBar(bar.id)} style={{ marginLeft: 10}}>
-                  Delete
-                </button>
-              </>
-            )}
+            <div style={{ marginTop: 10 }}>
+              {staff.map(person => (
+                <label key={person.id} style={{ display: "block" }}>
+                  <input
+                    type="checkbox"
+                    checked={(bar.staff_ids || []).includes(person.id)}
+                    onChange={() =>
+                      toggleStaffAssignment(
+                        bar.id,
+                        person.id,
+                        bar.staff_ids || []
+                      )
+                    }
+                  />
+                  {person.name}
+                </label>
+              ))}
+            </div>
+
           </div>
         ))}
       </div>
