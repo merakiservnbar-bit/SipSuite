@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { db } from "../../services/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import QRCodeDisplay from "../QRCodeDisplay";
 
 export default function EventOverview({ eventId }) {
@@ -17,40 +17,52 @@ export default function EventOverview({ eventId }) {
         end_time: ""
     });
 
+    const updateEvent = async () => {
+        try {
+            await updateDoc(doc(db, "events", eventId), form);
+
+            setEvent(form);
+
+            setIsEditing(false);
+        } catch (error) {
+            console.error("UPDATE ERROR:", error);
+        }
+    };
+
     useEffect(() => {
-  const fetchEvent = async () => {
-    try {
-      console.log("Fetching event:", eventId);
+        const fetchEvent = async () => {
+            try {
+            console.log("Fetching event:", eventId);
 
-      const docRef = doc(db, "events", eventId);
-      const snap = await getDoc(docRef);
+            const docRef = doc(db, "events", eventId);
+            const snap = await getDoc(docRef);
 
-      console.log("SNAP:", snap.exists());
+            console.log("SNAP:", snap.exists());
 
-      if (snap.exists()) {
-        const data = snap.data();
-        console.log("EVENT DATA:", data);
+            if (snap.exists()) {
+                const data = snap.data();
+                console.log("EVENT DATA:", data);
 
-        setEvent(data);
+                setEvent(data);
 
-        setForm({
-          name: data.name || "",
-          location: data.location || "",
-          date: data.date || "",
-          start_time: data.start_time || "",
-          end_time: data.end_time || ""
-        });
-      } else {
-        console.log("NO DOCUMENT FOUND");
-      }
+                setForm({
+                name: data.name || "",
+                location: data.location || "",
+                date: data.date || "",
+                start_time: data.start_time || "",
+                end_time: data.end_time || ""
+                });
+            } else {
+                console.log("NO DOCUMENT FOUND");
+            }
 
-    } catch (error) {
-      console.error("ERROR FETCHING EVENT:", error);
-    }
-  };
+            } catch (error) {
+            console.error("ERROR FETCHING EVENT:", error);
+            }
+        };
 
-  if (eventId) fetchEvent();
-}, [eventId]);
+        if (eventId) fetchEvent();
+    }, [eventId]);
 
     if (!event) return <p>Loading...</p>;
     
