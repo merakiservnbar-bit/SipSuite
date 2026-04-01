@@ -14,10 +14,10 @@ import { auth } from "../../services/firebase";
 
 export default function BartenderPage() {
   const [orders, setOrders] = useState([]);
-  const bartenderId = staffId;
   const [assignedBars, setAssignedBars] = useState([]);
   const [user, setUser] = useState(null);
   const [staffId,setStaffId] = useState(null);
+  const bartenderId = staffId;
 
   const updateStatus = async (id, newStatus) => {
     await updateDoc(doc(db, "orders", id), {
