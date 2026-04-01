@@ -7,7 +7,6 @@ import {
   getDocs,
   addDoc,
 } from "firebase/firestore";
-import { APP_CONFIG } from "../../config/appConfig";
 import OrderStatus from "./OrderStatus";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
@@ -24,9 +23,12 @@ export default function EventPage() {
   const { eventId } = useParams();
 
   useEffect(() => {
+    if (!eventId) return;
+
     const fetchMenu = async () => {
       const q = query(
-        collection(db, "menu_items")
+        collection(db, "menu_items"),
+        where("event_id", "==", eventId)
       );
 
       const snapshot = await getDocs(q);
@@ -40,9 +42,11 @@ export default function EventPage() {
     };
 
     fetchMenu();
-  }, []);
+  }, [eventId]);
 
   useEffect(() => {
+    if (!eventId) return;
+
     const fetchBars = async () => {
       const q = query(
         collection(db, "bars"),
@@ -60,33 +64,33 @@ export default function EventPage() {
     };
 
     fetchBars();
-  }, []);
+  }, [eventId]);
 
   const placeOrder = async (item) => {
-  if (!selectedBar) {
-    alert("Please select a bar first");
-    return;
-  }
+    if (!selectedBar) {
+      alert("Please select a bar first");
+      return;
+    }
 
-  try {
-    const docRef = await addDoc(collection(db, "orders"), {
-      event_id: APP_CONFIG.eventId,
-      bar_id: selectedBar,
-      items: [{ name: item.name, qty: 1 }],
-      status: "pending",
-      guest_name: "Guest",
-      order_number: Date.now().toString().slice(-4),
-      created_at: Date.now()
-    });
+    try {
+      const docRef = await addDoc(collection(db, "orders"), {
+        event_id: eventId,
+        bar_id: selectedBar,
+        items: [{ name: item.name, qty: 1 }],
+        status: "pending",
+        guest_name: "Guest",
+        order_number: Date.now().toString().slice(-4),
+        created_at: Date.now()
+      });
 
-    // ✅ SAVE ORDER ID HERE (inside function)
-    setCurrentOrderId(docRef.id);
-    localStorage.setItem("orderId", docRef.id);
+      // ✅ SAVE ORDER ID HERE (inside function)
+      setCurrentOrderId(docRef.id);
+      localStorage.setItem("orderId", docRef.id);
 
-  } catch (error) {
-    console.error("ORDER ERROR:", error);
-  }
-};
+    } catch (error) {
+      console.error("ORDER ERROR:", error);
+    }
+  };
 
   useEffect(() => {
     const savedOrder = localStorage.getItem("orderId");
