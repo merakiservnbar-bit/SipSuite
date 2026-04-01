@@ -56,6 +56,8 @@ export default function BartenderPage() {
   }, []);
 
   useEffect(() => {
+    if (!bartenderId) return;
+
     const fetchBars = async () => {
       const snapshot = await getDocs(collection(db, "bars"));
 
@@ -63,11 +65,13 @@ export default function BartenderPage() {
         .map(doc => ({ id: doc.id, ...doc.data() }))
         .filter(bar => (bar.staff_ids || []).includes(bartenderId));
 
+      console.log("ASSIGNED BARS:", data);
+
       setAssignedBars(data);
     };
 
     fetchBars();
-  }, []);
+  }, [bartenderId]);
 
   useEffect(() => {
     if (assignedBars.length === 0) return;
@@ -82,6 +86,7 @@ export default function BartenderPage() {
           );
 
         setOrders(data);
+        console.log("FILTERED ORDERS:", data);
       }
     );
 
