@@ -2,37 +2,18 @@ import { useEffect, useState } from "react";
 import { db } from "../../services/firebase";
 import {
   collection,
-  query,
-  where,
   onSnapshot,
   doc,
-  updateDoc
+  updateDoc,
+  getDocs
 } from "firebase/firestore";
-import { APP_CONFIG } from "../../config/appConfig";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 
 export default function BartenderPage() {
   const [orders, setOrders] = useState([]);
-
-  useEffect(() => {
-    const q = query(
-      collection(db, "orders"),
-      where("event_id", "==", APP_CONFIG.eventId),
-      where("bar_id", "==", APP_CONFIG.barId)
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      setOrders(data);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const bartenderId = "LPJVIBcUedbgr3zUJ4PH";
+  const [assignedBars, setAssignedBars] = useState([]);
 
   const updateStatus = async (id, newStatus) => {
     await updateDoc(doc(db, "orders", id), {
@@ -43,6 +24,44 @@ export default function BartenderPage() {
   const pending = orders.filter(o => o.status === "pending");
   const inProgress = orders.filter(o => o.status === "in_progress");
   const ready = orders.filter(o => o.status === "ready");
+
+  const getBarName = (barId) => {
+    const bar = assignedBars.find(b => b.id === barId);
+    return bar ? bar.name : "Unknown";
+  };
+
+  useEffect(() => {
+    const fetchBars = async () => {
+      const snapshot = await getDocs(collection(db, "bars"));
+
+      const data = snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .filter(bar => (bar.staff_ids || []).includes(bartenderId));
+
+      setAssignedBars(data);
+    };
+
+    fetchBars();
+  }, []);
+
+  useEffect(() => {
+    if (assignedBars.length === 0) return;
+
+    const unsubscribe = onSnapshot(
+      collection(db, "orders"),
+      (snapshot) => {
+        const data = snapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter(order =>
+            assignedBars.some(bar => bar.id === order.bar_id)
+          );
+
+        setOrders(data);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [assignedBars]);
 
   return (
     <div style={{ padding: 20 }}>
