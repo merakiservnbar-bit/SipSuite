@@ -18,6 +18,7 @@ export default function BartenderPage() {
   const [user, setUser] = useState(null);
   const [staffId,setStaffId] = useState(null);
   const bartenderId = staffId;
+  const [selectedEventId, setSelectedEventId] = useState(null);
 
   const updateStatus = async (id, newStatus) => {
     await updateDoc(doc(db, "orders", id), {
@@ -33,6 +34,31 @@ export default function BartenderPage() {
     const bar = assignedBars.find(b => b.id === barId);
     return bar ? bar.name : "Unknown";
   };
+
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    if (!bartenderId) return;
+
+    const fetchEvents = async () => {
+      const snapshot = await getDocs(collection(db, "bars"));
+
+      const bars = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      const assigned = bars.filter(bar =>
+        (bar.staff_ids || []).includes(bartenderId)
+      );
+
+      const uniqueEventIds = [...new Set(assigned.map(b => b.event_id))];
+
+      setEvents(uniqueEventIds);
+    };
+
+    fetchEvents();
+  }, [bartenderId]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -56,25 +82,26 @@ export default function BartenderPage() {
   }, []);
 
   useEffect(() => {
-    if (!bartenderId) return;
+    if (!bartenderId || !selectedEventId) return;
 
     const fetchBars = async () => {
       const snapshot = await getDocs(collection(db, "bars"));
 
       const data = snapshot.docs
         .map(doc => ({ id: doc.id, ...doc.data() }))
-        .filter(bar => (bar.staff_ids || []).includes(bartenderId));
-
-      console.log("ASSIGNED BARS:", data);
+        .filter(bar =>
+          (bar.staff_ids || []).includes(bartenderId) &&
+          bar.event_id === selectedEventId
+        );
 
       setAssignedBars(data);
     };
 
     fetchBars();
-  }, [bartenderId]);
+  }, [bartenderId, selectedEventId]);
 
   useEffect(() => {
-    if (assignedBars.length === 0) return;
+    if (assignedBars.length === 0 || !selectedEventId) return;
 
     const unsubscribe = onSnapshot(
       collection(db, "orders"),
@@ -82,22 +109,39 @@ export default function BartenderPage() {
         const data = snapshot.docs
           .map(doc => ({ id: doc.id, ...doc.data() }))
           .filter(order =>
+            order.event_id === selectedEventId &&
             assignedBars.some(bar => bar.id === order.bar_id)
           );
 
         setOrders(data);
-        console.log("FILTERED ORDERS:", data);
       }
     );
 
     return () => unsubscribe();
-  }, [assignedBars]);
+  }, [assignedBars, selectedEventId]);
 
   if (!bartenderId) return <p>Loading user...</p>;
 
   return (
     <div style={{ padding: 20 }}>
       <h1 style={{ marginBottom: 20 }}>Bartender Dashboard</h1>
+
+      <h2>Select Event</h2>
+
+      <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+        {events.map(eventId => (
+          <button
+            key={eventId}
+            onClick={() => setSelectedEventId(eventId)}
+            style={{
+              background: selectedEventId === eventId ? "#C6A96B" : "#333",
+              color: "white"
+            }}
+          >
+            {eventId}
+          </button>
+        ))}
+      </div>
 
       <div
         style={{
