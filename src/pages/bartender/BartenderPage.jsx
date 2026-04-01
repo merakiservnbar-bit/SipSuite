@@ -9,11 +9,15 @@ import {
 } from "firebase/firestore";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../services/firebase";
 
 export default function BartenderPage() {
   const [orders, setOrders] = useState([]);
-  const bartenderId = "LPJVIBcUedbgr3zUJ4PH";
+  const bartenderId = staffId;
   const [assignedBars, setAssignedBars] = useState([]);
+  const [user, setUser] = useState(null);
+  const [staffId,setStaffId] = useState(null);
 
   const updateStatus = async (id, newStatus) => {
     await updateDoc(doc(db, "orders", id), {
@@ -29,6 +33,27 @@ export default function BartenderPage() {
     const bar = assignedBars.find(b => b.id === barId);
     return bar ? bar.name : "Unknown";
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!currentUser) return;
+
+      setUser(currentUser);
+
+      // find matching staff
+      const snapshot = await getDocs(collection(db, "staff"));
+
+      const match = snapshot.docs.find(doc =>
+        doc.data().email === currentUser.email
+      );
+
+      if (match) {
+        setStaffId(match.id);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchBars = async () => {
@@ -62,6 +87,8 @@ export default function BartenderPage() {
 
     return () => unsubscribe();
   }, [assignedBars]);
+
+  if (!bartenderId) return <p>Loading user...</p>;
 
   return (
     <div style={{ padding: 20 }}>
