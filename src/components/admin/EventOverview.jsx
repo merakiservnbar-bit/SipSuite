@@ -18,25 +18,39 @@ export default function EventOverview({ eventId }) {
     });
 
     useEffect(() => {
-        const fetchEvent = async () => {
-        const docRef = doc(db, "events", eventId);
-        const snap = await getDoc(docRef);
+  const fetchEvent = async () => {
+    try {
+      console.log("Fetching event:", eventId);
 
-        if (snap.exists()) {
-            const data = snap.data();
-            setEvent(data);
+      const docRef = doc(db, "events", eventId);
+      const snap = await getDoc(docRef);
 
-            setForm({
-                name: data.name || "",
-                location: data.location || "",
-                date: data.date || "",
-                start_time: data.start_time || "",
-                end_time: data.end_time || ""
-            });
-        }
+      console.log("SNAP:", snap.exists());
 
-        fetchEvent();
-    }}, [eventId]);
+      if (snap.exists()) {
+        const data = snap.data();
+        console.log("EVENT DATA:", data);
+
+        setEvent(data);
+
+        setForm({
+          name: data.name || "",
+          location: data.location || "",
+          date: data.date || "",
+          start_time: data.start_time || "",
+          end_time: data.end_time || ""
+        });
+      } else {
+        console.log("NO DOCUMENT FOUND");
+      }
+
+    } catch (error) {
+      console.error("ERROR FETCHING EVENT:", error);
+    }
+  };
+
+  if (eventId) fetchEvent();
+}, [eventId]);
 
     if (!event) return <p>Loading...</p>;
     
