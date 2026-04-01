@@ -4,6 +4,8 @@ import { doc, getDoc } from "firebase/firestore";
 import QRCodeDisplay from "../QRCodeDisplay";
 
 export default function EventOverview({ eventId }) {
+
+    console.log("EVENT ID:", eventId);
     const [event, setEvent] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
 
@@ -37,7 +39,7 @@ export default function EventOverview({ eventId }) {
     }}, [eventId]);
 
     if (!event) return <p>Loading...</p>;
-    console.log("EVENT ID:", eventId);
+    
 
     return (
         <div>
