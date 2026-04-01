@@ -37,6 +37,7 @@ export default function EventOverview({ eventId }) {
     }}, [eventId]);
 
     if (!event) return <p>Loading...</p>;
+    console.log("EVENT ID:", eventId);
 
     return (
         <div>
