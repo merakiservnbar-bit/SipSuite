@@ -13,12 +13,36 @@ export default function EventDetailPage() {
       <h1>Event</h1>
 
       {/* Tabs */}
-      <div style={{ display: "flex", gap: 20, marginBottom: 20 }}>
-        <button onClick={() => setActiveTab("overview")} className="btn-secondary">Overview</button>
-        <button onClick={() => setActiveTab("menu")} className="btn-secondary">Menu</button>
-        <button onClick={() => setActiveTab("bars")} className="btn-secondary">Bars</button>
-        <button onClick={() => setActiveTab("staff")} className="btn-secondary">Staff</button>
-        <button className="btn-secondary">Analytics</button>
+      <div className="tabs">
+        <button
+          onClick={() => setActiveTab("overview")}
+          className={activeTab === "overview" ? "tab active" : "tab"}
+        >
+          Overview
+        </button>
+
+        <button
+          onClick={() => setActiveTab("bars")}
+          className={activeTab === "bars" ? "tab active" : "tab"}
+        >
+          Bars
+        </button>
+
+        <button
+          onClick={() => setActiveTab("menu")}
+          className={activeTab === "menu" ? "tab active" : "tab"}
+        >
+          Menu
+        </button>
+
+        <button
+          onClick={() => setActiveTab("staff")}
+          className={activeTab === "staff" ? "tab active" : "tab"}
+        >
+          Staff
+        </button>
+
+        <button className="tab">Analytics</button>
       </div>
 
       {/* Views */}
@@ -32,6 +56,10 @@ export default function EventDetailPage() {
 
       {activeTab === "bars" && (
         <BarsManager eventId={eventId} />
+      )}
+
+      {activeTab === "staff" && (
+        <p className="text-muted">Staff assignment coming next</p>
       )}
     </div>
   );

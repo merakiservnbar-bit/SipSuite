@@ -7,6 +7,12 @@ import { useNavigate } from "react-router-dom";
 export default function EventsPage() {
   const [events, setEvents] = useState([]);
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    location: "",
+    date: ""
+  });
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -21,25 +27,59 @@ export default function EventsPage() {
     fetchEvents();
   }, []);
 
-  const handleCreateEvent = async () => {
-    const docRef = await addDoc(collection(db, "events"), {
-      name: "New Event",
-      location: "",
-      date: "",
-      created_at: Date.now()
-    });
-
-    setEvents(prev => [
-      { id: docRef.id, name: "New Event", location: "", date: "" },
-      ...prev
-    ]);
-  };
-
   return (
     <div>
       <h1 className="page-title">Events</h1>
 
-      <button className="btn-primary" onClick={handleCreateEvent}>+ New Event</button>
+      <button className="btn-primary" onClick={() => setShowModal(true)}>
+        + New Event
+      </button>
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Create Event</h2>
+
+            <input
+              placeholder="Event Name"
+              value={form.name}
+              onChange={e => setForm({ ...form, name: e.target.value })}
+            />
+
+            <input
+              placeholder="Location"
+              value={form.location}
+              onChange={e => setForm({ ...form, location: e.target.value })}
+            />
+
+            <input
+              type="datetime-local"
+              value={form.date}
+              onChange={e => setForm({ ...form, date: e.target.value })}
+            />
+
+            <button
+              className="btn-primary"
+              onClick={async () => {
+                const docRef = await addDoc(collection(db, "events"), {
+                  ...form,
+                  created_at: Date.now()
+                });
+
+                setEvents(prev => [
+                  { id: docRef.id, ...form },
+                  ...prev
+                ]);
+
+                setForm({ name: "", location: "", date: "" }); // ✅ ADD THIS
+                setShowModal(false);
+              }}
+            >
+              Create
+            </button>
+          </div>
+        </div>
+      )}
 
       <input placeholder="Search events..." />
 

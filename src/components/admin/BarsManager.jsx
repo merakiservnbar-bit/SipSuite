@@ -6,7 +6,10 @@ import {
   addDoc,
   deleteDoc,
   doc,
-  updateDoc
+  updateDoc,
+  onSnapshot,
+  query,
+  where
 } from "firebase/firestore";
 
 export default function BarsManager({ eventId }) {
@@ -20,17 +23,21 @@ export default function BarsManager({ eventId }) {
   useEffect(() => {
     if (!eventId) return;
 
-    const fetchBars = async () => {
-      const snapshot = await getDocs(collection(db, "bars"));
+    const q = query(
+      collection(db, "bars"),
+      where("event_id", "==", eventId)
+    );
 
-      const data = snapshot.docs
-        .map(doc => ({ id: doc.id, ...doc.data() }))
-        .filter(bar => bar.event_id === eventId);
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
 
       setBars(data);
-    };
+    });
 
-    fetchBars();
+    return () => unsubscribe();
   }, [eventId]);
 
   const createBar = async () => {
@@ -46,19 +53,12 @@ export default function BarsManager({ eventId }) {
     if (!window.confirm("Delete this bar?")) return;
 
     await deleteDoc(doc(db, "bars", id));
-    setBars(prev => prev.filter(bar => bar.id !== id));
   };
 
   const updateBar = async (id) => {
     await updateDoc(doc(db, "bars", id), {
       name: editValue
     });
-
-    setBars(prev =>
-      prev.map(bar =>
-        bar.id === id ? { ...bar, name: editValue } : bar
-      )
-    );
 
     setEditingId(null);
   };

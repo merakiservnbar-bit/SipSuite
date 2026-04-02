@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { db } from "../../services/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import QRCodeDisplay from "../QRCodeDisplay";
+import { useNavigate } from "react-router-dom";
 
 export default function EventOverview({ eventId }) {
 
@@ -16,6 +17,15 @@ export default function EventOverview({ eventId }) {
         start_time: "",
         end_time: ""
     });
+    const navigate = useNavigate();
+
+    const handleDelete = async () => {
+        if (!confirm("Delete this event?")) return;
+
+        await deleteDoc(doc(db, "events", eventId));
+
+        navigate("/admin");
+    };
 
     const updateEvent = async () => {
         try {
@@ -115,6 +125,13 @@ export default function EventOverview({ eventId }) {
                 </button>
             </>
         )}
+
+        <button
+            className="btn-danger"
+            onClick={handleDelete}
+        >
+            Delete Event
+        </button>
 
         <div style={{ marginTop: 30 }}>
             <QRCodeDisplay eventId={eventId} />

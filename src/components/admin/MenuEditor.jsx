@@ -6,7 +6,8 @@ import {
   addDoc,
   deleteDoc,
   doc,
-  updateDoc
+  updateDoc,
+  onSnapshot
 } from "firebase/firestore";
 
 export default function MenuEditor({ eventId }) {
@@ -23,8 +24,8 @@ export default function MenuEditor({ eventId }) {
     if (!eventId) return;
 
     const fetchData = async () => {
-      const barsSnap = await getDocs(collection(db, "bars"));
-      const menuSnap = await getDocs(collection(db, "menu_items"));
+      const barsSnap = onSnapshot(collection(db, "bars"));
+      const menuSnap = onSnapshot(collection(db, "menu_items"));
 
       setBars(
         barsSnap.docs
