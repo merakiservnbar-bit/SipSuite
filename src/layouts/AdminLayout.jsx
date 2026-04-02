@@ -33,6 +33,7 @@ export default function AdminLayout() {
           <Link className={location.pathname === "/admin" ? "active" : ""} to="/admin">Events</Link>
           <Link className={location.pathname.includes("/drinks") ? "active" : ""} to="/admin/drinks">Drink Database</Link>
           <Link className={location.pathname.includes("/staff") ? "active" : ""} to="/admin/staff">Staff</Link>
+          <Link className={location.pathname.includes("/analytics") ? "active" : ""} to="/admin/analytics">Analytics</Link>
         </div>
       </div>
 

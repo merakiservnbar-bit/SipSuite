@@ -12,6 +12,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AppLayout from "./layouts/AppLayout";
 import OrderHistoryPage from "./pages/bartender/OrderHistoryPage";
 import AnalyticsPage from "./pages/bartender/AnalyticsPage";
+import AdminAnalyticsPage from "./pages/admin/AdminAnalyticsPage";
+import DrinksPage from "./pages/admin/DrinksPage";
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
         <Route index element={<EventsPage />} />
         <Route path="events/:eventId" element={<EventDetailPage />} />
         <Route path="staff" element={<StaffPage />} />
+        <Route path="analytics" element={<AdminAnalyticsPage />} />
+        <Route path="drinks" element={<DrinksPage />}/>
       </Route>
       <Route path="/event/:eventId" element={<EventPage />} />
       <Route

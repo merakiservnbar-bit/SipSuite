@@ -20,6 +20,7 @@ export default function MenuEditor({ eventId }) {
 
   const [editingItemId, setEditingItemId] = useState(null);
   const [editValue, setEditValue] = useState("");
+  const [drinks, setDrinks] = useState([]);
 
   // 🔥 FETCH DATA
   useEffect(() => {
@@ -66,8 +67,14 @@ export default function MenuEditor({ eventId }) {
   };
 
   const createMenuItem = async () => {
+    const selected = drinks.find(d => d.id === drinkName);
+
+    if (!selected) return;
+
     await addDoc(collection(db, "menu_items"), {
-      name: drinkName,
+      drink_id: selected.id,        // 🔥 IMPORTANT
+      name: selected.name,
+      category: selected.category,
       event_id: eventId,
       price: 0,
       is_available: true
@@ -96,15 +103,36 @@ export default function MenuEditor({ eventId }) {
     setEditingItemId(null);
   };
 
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, "drinks"),
+      (snapshot) => {
+        const data = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setDrinks(data);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div>
       <h2>Menu</h2>
 
-      <input
-        placeholder="New drink"
+      <select
         onChange={(e) => setDrinkName(e.target.value)}
-      />
-      <button onClick={createMenuItem} className="btn-primary">Add</button>
+      >
+        <option value="">Select Drink</option>
+
+        {drinks.map(d => (
+          <option key={d.id} value={d.id}>
+            {d.name}
+          </option>
+        ))}
+      </select>
 
       {menuItems.map(item => (
         <div key={item.id}>

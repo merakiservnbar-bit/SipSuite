@@ -14,8 +14,8 @@ import {
 
 export default function AnalyticsPage() {
     const { eventId } = useParams();
-
     const [orders, setOrders] = useState([]);
+    const [staffMap, setStaffMap] = useState([]);
 
     useEffect(() => {
         if (!eventId) return;
@@ -131,14 +131,74 @@ export default function AnalyticsPage() {
         })
     );
 
+    const staffStats = {};
+
+        orders.forEach(order => {
+        if (!order.staff_id || !order.started_at) return;
+
+        if (!staffStats[order.staff_id]) {
+            staffStats[order.staff_id] = {
+            count: 0,
+            totalPrep: 0
+            };
+        }
+
+        staffStats[order.staff_id].count += 1;
+        staffStats[order.staff_id].totalPrep +=
+            order.completed_at - order.started_at;
+        });
+
+        const staffPerformance = Object.entries(staffStats).map(
+        ([staffId, data]) => ({
+            name: staffMap[staffId]?.name || staffMap[staffId]?.email || "Unknown",
+            count: data.count,
+            avgPrep:
+            data.count > 0
+                ? Math.floor(data.totalPrep / data.count)
+                : 0
+        })
+    );
+
+    const leaderboard = [...staffPerformance].sort(
+        (a, b) => a.avgPrep - b.avgPrep
+    );
+
+    useEffect(() => {
+        const unsubscribe = onSnapshot(
+            collection(db, "staff"),
+            (snapshot) => {
+            const map = {};
+            snapshot.docs.forEach(doc => {
+                map[doc.id] = doc.data();
+            });
+            setStaffMap(map);
+            }
+        );
+
+        return () => unsubscribe();
+    }, []);
+
     return (
         <div style={{ padding: 20 }}>
             <h1>Analytics</h1>
 
-            <div style={{ marginBottom: 20 }}>
-                <h3>Total Orders: {orders.length}</h3>
-                <h3>Avg Wait: {avgWait}</h3>
-                <h3>Avg Prep: {avgPrep}</h3>
+            <div className="analytics-grid">
+
+                <div className="stat-card">
+                    <p className="text-secondary">Total Orders</p>
+                    <h2>{orders.length}</h2>
+                </div>
+
+                <div className="stat-card">
+                    <p className="text-secondary">Avg Wait</p>
+                    <h2>{avgWait}</h2>
+                </div>
+
+                <div className="stat-card">
+                    <p className="text-secondary">Avg Prep</p>
+                    <h2>{avgPrep}</h2>
+                </div>
+
             </div>
 
             <div>
@@ -209,11 +269,49 @@ export default function AnalyticsPage() {
 
             <h2>Drink Performance</h2>
 
-            {drinkPerformance.map(d => (
-                <div key={d.name} className="card">
-                    {d.name} — {d.count} orders — Avg Prep: {Math.floor(d.avgPrep / 1000)}s
-                </div>
-            ))}
+            <div className="analytics-grid">
+                {drinkPerformance.map(d => (
+                    <div key={d.name} className="stat-card">
+                    <h3>{d.name}</h3>
+                    <p className="text-secondary">{d.count} orders</p>
+                    <p>⏱ {Math.floor(d.avgPrep / 1000)}s avg prep</p>
+                    </div>
+                ))}
+            </div>
+
+            <h2>Bartender Performance</h2>
+
+            <div className="analytics-grid">
+                {staffPerformance.map(s => (
+                    <div key={s.staffId} className="stat-card">
+                    <h3>{s.staffId}</h3>
+                    <p className="text-secondary">{s.count} orders</p>
+                    <p>⏱ {Math.floor(s.avgPrep / 1000)}s avg prep</p>
+                    </div>
+                ))}
+            </div>
+
+            <h2>Top Bartenders</h2>
+
+            <div className="analytics-grid">
+                {leaderboard.map((s, index) => (
+                    <div key={s.staffId} className="stat-card">
+
+                    <h3>
+                        #{index + 1} {s.name}
+                    </h3>
+
+                    <p className="text-secondary">
+                        {s.count} orders
+                    </p>
+
+                    <p>
+                        ⏱ {Math.floor(s.avgPrep / 1000)}s avg prep
+                    </p>
+
+                    </div>
+                ))}
+            </div>
 
         </div>
     );

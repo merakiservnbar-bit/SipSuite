@@ -118,28 +118,42 @@ export default function EventPage() {
 
       <h1 className="page-title">Menu</h1>
 
-      <div className="menu-grid">
-        {menu.map(item => (
-          <div
-            key={item.id}
-            className={`menu-card ${
-              item.is_available === false ? "unavailable" : ""
-            }`}
-          >
-            <div className="menu-name">{item.name}</div>
+      <div className="tabs">
+        <button onClick={() => setCategory("all")} className="tab">All</button>
+        <button onClick={() => setCategory("cocktails")} className="tab">Cocktails</button>
+      </div>
 
-            {item.is_available === false ? (
-              <span className="badge">Unavailable</span>
-            ) : (
-              <button
-                className="btn-primary"
-                onClick={() => placeOrder(item)}
-              >
-                Add
-              </button>
-            )}
-          </div>
-        ))}
+      <div className="menu-grid">
+        {menu
+          .filter(item =>
+            category === "all" || item.category === category
+          )
+          .map(item => (
+            <div
+              key={item.id}
+              className={`menu-card ${
+                item.is_available === false ? "unavailable" : ""
+              }`}
+            >
+              <div className="menu-name">{item.name}</div>
+
+              {item.is_available === false ? (
+                <span className="badge">Unavailable</span>
+              ) : (
+                <button
+                  className="btn-primary"
+                  disabled={!selectedBar}
+                  style={{
+                    opacity: !selectedBar ? 0.5 : 1,
+                    cursor: !selectedBar ? "not-allowed" : "pointer"
+                  }}
+                >
+                  Add
+                </button>
+              )}
+            </div>
+          ))
+        }
       </div>
 
       {/* 🔥 ADD THIS BLOCK */}

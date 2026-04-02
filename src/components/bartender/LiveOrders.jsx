@@ -17,6 +17,7 @@ export default function LiveOrders({ eventId }) {
 
     const [orders, setOrders] = useState([]);
     const [assignedBars, setAssignedBars] = useState([]);
+    const [event, setEvent] = useState(null);
 
     const formatTime = (ms) => {
         const totalSeconds = Math.floor(ms / 1000);
@@ -52,28 +53,46 @@ export default function LiveOrders({ eventId }) {
     const [, setTick] = useState(0);
 
     const getWaitBackground = (order) => {
+        if (!event) return "#111827";
         if (order.status === "ready") return "#111827";
 
         const wait = Date.now() - order.created_at;
 
-        if (wait > 180000) return "#3b0000"; // deep red
-        if (wait > 60000) return "#3a2a00";  // amber
+        const target = event.target_wait_time || 120000;
+
+        if (wait > target * 1.5) return "#3b0000";
+        if (wait > target) return "#3a2a00";
 
         return "#111827";
     };
 
     const getPrepBorder = (order) => {
+        if (!event) return "1px solid #1F2937";
         if (order.status === "ready") return "1px solid #1F2937";
-
         if (!order.started_at) return "1px solid #1F2937";
 
         const prep = Date.now() - order.started_at;
 
-        if (prep > 120000) return "2px solid red";
-        if (prep > 60000) return "2px solid orange";
+        const target = event.target_prep_time || 60000;
+
+        if (prep > target * 1.5) return "2px solid red";
+        if (prep > target) return "2px solid orange";
 
         return "1px solid #1F2937";
     };
+
+    useEffect(() => {
+        if (!eventId) return;
+
+        const unsubscribe = onSnapshot(
+            doc(db, "events", eventId),
+            (docSnap) => {
+            setEvent(docSnap.data());
+            }
+        );
+
+        return () => unsubscribe();
+    }, [eventId]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -150,7 +169,10 @@ export default function LiveOrders({ eventId }) {
             updateData.completed_at = Date.now();
         }
 
-        await updateDoc(doc(db, "orders", order.id), updateData);
+        await updateDoc(doc(db, "orders", order.id), {
+            ...updateData,
+            staff_id: bartenderId   // 🔥 ADD THIS
+        });
     };
 
      const isRecentReady = (order) => {

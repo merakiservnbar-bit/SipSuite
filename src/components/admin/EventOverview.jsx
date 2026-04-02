@@ -15,7 +15,9 @@ export default function EventOverview({ eventId }) {
         location: "",
         date: "",
         start_time: "",
-        end_time: ""
+        end_time: "",
+        target_wait_time: 120000,
+        target_prep_time: 60000
     });
     const navigate = useNavigate();
 
@@ -60,7 +62,9 @@ export default function EventOverview({ eventId }) {
                 location: data.location || "",
                 date: data.date || "",
                 start_time: data.start_time || "",
-                end_time: data.end_time || ""
+                end_time: data.end_time || "",
+                target_wait_time: data.target_wait_time || "",
+                target_prep_time: data.target_prep_time || ""
                 });
             } else {
                 console.log("NO DOCUMENT FOUND");
@@ -88,6 +92,29 @@ export default function EventOverview({ eventId }) {
                 <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
                 <input type="time" value={form.start_time} onChange={(e) => setForm({ ...form, start_time: e.target.value })} />
                 <input type="time" value={form.end_time} onChange={(e) => setForm({ ...form, end_time: e.target.value })} />
+                <input
+                    type="number"
+                    placeholder="Target Wait (seconds)"
+                    value={form.target_wait_time / 1000}
+                    onChange={(e) =>
+                        setForm({
+                        ...form,
+                        target_wait_time: Number(e.target.value) * 1000
+                        })
+                    }
+                />
+
+                <input
+                    type="number"
+                    placeholder="Target Prep (seconds)"
+                    value={form.target_prep_time / 1000}
+                    onChange={(e) =>
+                        setForm({
+                        ...form,
+                        target_prep_time: Number(e.target.value) * 1000
+                        })
+                    }
+                />
 
                 <div className="button-row">
                     <button onClick={updateEvent} className="btn-primary">Save</button>
