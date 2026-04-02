@@ -99,8 +99,8 @@ export default function EventOverview({ eventId }) {
                 onChange={(e) => setForm({ ...form, end_time: e.target.value })}
                 />
 
-                <button onClick={updateEvent}>Save</button>
-                <button onClick={() => setIsEditing(false)}>Cancel</button>
+                <button onClick={updateEvent} className="btn-primary">Save</button>
+                <button onClick={() => setIsEditing(false)} style={{backgroundColor:"red", color:"white"}}>Cancel</button>
             </>
             ) : (
             <>
@@ -110,7 +110,7 @@ export default function EventOverview({ eventId }) {
                 {event.date} • {event.start_time} - {event.end_time}
                 </p>
 
-                <button onClick={() => setIsEditing(true)}>
+                <button onClick={() => setIsEditing(true)} className="btn-primary">
                 Edit Event
                 </button>
             </>
@@ -121,17 +121,18 @@ export default function EventOverview({ eventId }) {
         </div>
 
         <div style={{ marginTop: 20 }}>
-            <button onClick={() => window.print()}>
+            <button onClick={() => window.print()} className="btn-primary">
             Print QR
             </button>
 
             <button
-            onClick={() => {
-                navigator.clipboard.writeText(
-                `https://sip-suite.vercel.app/event/${eventId}`
-                );
-            }}
-            style={{ marginLeft: 10 }}
+                onClick={() => {
+                    navigator.clipboard.writeText(
+                    `https://sip-suite.vercel.app/event/${eventId}`
+                    );
+                }}
+                style={{ marginLeft: 10 }}
+                className="btn-primary"
             >
             Copy Link
             </button>
@@ -147,6 +148,7 @@ export default function EventOverview({ eventId }) {
                     a.click();
                 }}
                 style={{marginLeft:10}}
+                className="btn-primary"
             >
                 Download QR
             </button>

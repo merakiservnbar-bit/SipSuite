@@ -107,7 +107,7 @@ export default function BarsManager({ eventId }) {
         value={barName}
         onChange={(e) => setBarName(e.target.value)}
       />
-      <button onClick={createBar}>Add Bar</button>
+      <button onClick={createBar} className="btn-primary">Add Bar</button>
 
       <div style={{ marginTop: 20 }}>
         {bars.map(bar => (

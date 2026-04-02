@@ -14,13 +14,14 @@ export default function BartenderEventPage() {
       <button
         onClick={() => navigate(`/bartender/events/${eventId}/live`)}
         style={{ marginBottom: 20 }}
+        className="btn-primary"
       >
         Start Event
       </button>
 
       <div style={{ display: "flex", gap: 20 }}>
-        <button onClick={() => setTab("overview")}>Overview</button>
-        <button onClick={() => setTab("menu")}>Menu</button>
+        <button onClick={() => setTab("overview")} className="btn-secondary">Overview</button>
+        <button onClick={() => setTab("menu")} className="btn-secondary">Menu</button>
       </div>
 
       {tab === "overview" && <p>Event details here</p>}

@@ -14,11 +14,11 @@ export default function EventDetailPage() {
 
       {/* Tabs */}
       <div style={{ display: "flex", gap: 20, marginBottom: 20 }}>
-        <button onClick={() => setActiveTab("overview")}>Overview</button>
-        <button onClick={() => setActiveTab("menu")}>Menu</button>
-        <button onClick={() => setActiveTab("bars")}>Bars</button>
-        <button onClick={() => setActiveTab("staff")}>Staff</button>
-        <button>Analytics</button>
+        <button onClick={() => setActiveTab("overview")} className="btn-secondary">Overview</button>
+        <button onClick={() => setActiveTab("menu")} className="btn-secondary">Menu</button>
+        <button onClick={() => setActiveTab("bars")} className="btn-secondary">Bars</button>
+        <button onClick={() => setActiveTab("staff")} className="btn-secondary">Staff</button>
+        <button className="btn-secondary">Analytics</button>
       </div>
 
       {/* Views */}

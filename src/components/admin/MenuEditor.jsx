@@ -90,7 +90,7 @@ export default function MenuEditor({ eventId }) {
         placeholder="New drink"
         onChange={(e) => setDrinkName(e.target.value)}
       />
-      <button onClick={createMenuItem}>Add</button>
+      <button onClick={createMenuItem} className="btn-primary">Add</button>
 
       {menuItems.map(item => (
         <div key={item.id}>
@@ -100,16 +100,19 @@ export default function MenuEditor({ eventId }) {
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
               />
-              <button onClick={() => updateMenuItem(item.id)}>Save</button>
+              <button onClick={() => updateMenuItem(item.id)} className="btn-primary">Save</button>
             </>
           ) : (
             <>
               <span>{item.name}</span>
-              <button onClick={() => {
-                setEditingItemId(item.id);
-                setEditValue(item.name);
-              }}>Edit</button>
-              <button onClick={() => deleteMenuItem(item.id)}>Delete</button>
+              <button 
+                onClick={() => {
+                  setEditingItemId(item.id);
+                  setEditValue(item.name);
+                }}
+                className="btn-primary"
+              >Edit</button>
+              <button onClick={() => deleteMenuItem(item.id)} style={{backgroundColor:"red", color:"white"}}>Delete</button>
             </>
           )}
         </div>

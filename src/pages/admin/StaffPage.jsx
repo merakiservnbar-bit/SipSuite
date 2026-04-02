@@ -38,7 +38,7 @@ export default function StaffPage() {
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
-      <button onClick={addStaff}>Add</button>
+      <button onClick={addStaff} className="btn-primary">Add</button>
 
       {staff.map(person => (
         <div key={person.id}>

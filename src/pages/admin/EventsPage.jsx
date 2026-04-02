@@ -23,19 +23,25 @@ export default function EventsPage() {
 
   return (
     <div>
-      <h1>Events</h1>
+      <h1 className="page-title">Events</h1>
 
-      <button>+ New Event</button>
+      <button className="btn-primary">+ New Event</button>
 
       <input placeholder="Search events..." />
 
-      {events.map(event => (
-        <EventCard
-          key={event.id}
-          event={event}
-          onClick={() => navigate(`/admin/events/${event.id}`)}
-        />
-      ))}
+      <div className="event-grid">
+        {events.map(event => (
+          <div
+            key={event.id}
+            className="event-card"
+            onClick={() => navigate(`/admin/events/${event.id}`)}
+          >
+            <h3>{event.name}</h3>
+            <p className="text-secondary">{event.location}</p>
+            <p className="text-muted">{event.date}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

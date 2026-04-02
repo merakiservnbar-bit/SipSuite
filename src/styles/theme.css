@@ -1,0 +1,155 @@
+/* BACKGROUND */
+body {
+  background-color: #0B1220;
+  color: #F9FAFB;
+  font-family: system-ui, sans-serif;
+}
+
+/* SURFACES */
+.card {
+  background: #111827;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.card-elevated {
+  background: #1F2937;
+}
+
+/* TEXT */
+.text-secondary {
+  color: #9CA3AF;
+}
+
+.text-muted {
+  color: #6B7280;
+}
+
+/* BUTTONS */
+.btn-primary {
+  background: #C8A96A;
+  color: black;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  width: 100%;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: #1F2937;
+  color: #F9FAFB;
+}
+
+.live-orders-container {
+  padding: 24px;
+}
+
+.live-orders-header {
+  margin-bottom: 20px;
+}
+
+.columns {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.column {
+  flex: 1;
+}
+
+.column-title {
+  color: #C8A96A;
+  margin-bottom: 10px;
+}
+
+.order-card {
+  background: #111827;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.order-number {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.order-items {
+  margin: 10px 0;
+  color: #F9FAFB;
+}
+
+.order-timer {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin-bottom: 10px;
+}
+
+.order-card.low {
+  border: 1px solid #1F2937;
+}
+
+.order-card.medium {
+  border: 1px solid orange;
+}
+
+.order-card.high {
+  border: 1px solid red;
+  background: #2a0000;
+}
+
+.navbar {
+  height: 60px;
+  background: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid #1F2937;
+}
+
+.nav-links span {
+  margin-left: 20px;
+  cursor: pointer;
+  color: #9CA3AF;
+}
+
+.nav-links span:hover {
+  color: #C8A96A;
+}
+
+.app-content {
+  padding: 24px;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.menu-card {
+  background: #111827;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.menu-card.unavailable {
+  opacity: 0.5;
+}
+
+.menu-name {
+  margin-bottom: 10px;
+}
+
+.badge {
+  background: red;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}

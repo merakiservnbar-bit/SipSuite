@@ -14,12 +14,28 @@ export default function BartenderLivePage() {
     <div style={{ padding: 20 }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <h1>Event</h1>
-        <p>{staff?.name}</p>
+        <p className="text-secondary">{staff?.name}</p>
       </div>
 
       <div style={{ display: "flex", gap: 20 }}>
-        <button onClick={() => setTab("orders")}>Live Orders</button>
-        <button onClick={() => setTab("menu")}>Menu</button>
+        <button onClick={() => setTab("orders")}  className="btn-secondary">Live Orders</button>
+        <button onClick={() => setTab("menu")} className="btn-secondary">Menu</button>
+        <button
+          onClick={() =>
+            navigate(`/bartender/events/${eventId}/history`)
+          }
+          className="btn-secondary"
+        >
+          View History
+        </button>
+        <button
+          onClick={() =>
+            navigate(`/bartender/events/${eventId}/analytics`)
+          }
+          className="btn-secondary"
+        >
+          Analytics
+        </button>
       </div>
 
       {tab === "orders" && <LiveOrders eventId={eventId} />}

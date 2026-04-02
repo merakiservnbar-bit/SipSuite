@@ -33,6 +33,7 @@ export default function OrderStatus({ orderId }) {
       <button onClick={() => {
         localStorage.removeItem("orderId");
         window.location.reload();
+        className="btn-secondary"
       }}>
         Back to Menu
       </button>

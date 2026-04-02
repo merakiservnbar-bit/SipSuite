@@ -9,10 +9,12 @@ import EventDetailPage from "./pages/admin/EventDetailPage";
 import StaffPage from "./pages/admin/StaffPage";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AppLayout from "./layouts/AppLayout";
 
 function App() {
   return (
     <Routes>
+      <Route element={<AppLayout />}>
       <Route
         path="/admin"
         element={
@@ -50,7 +52,24 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/bartender/events/:eventId/history"
+        element={
+          <ProtectedRoute role="staff">
+            <OrderHistoryPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bartender/events/:eventId/analytics"
+        element={
+          <ProtectedRoute role="staff">
+            <AnalyticsPage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/login" element={<LoginPage />} />
+      </Route>
     </Routes>
   );
 }

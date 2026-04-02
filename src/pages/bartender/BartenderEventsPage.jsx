@@ -50,13 +50,13 @@ export default function BartenderEventsPage() {
           onClick={() => navigate(`/bartender/events/${event.id}`)}
           style={{
             padding: 20,
-            background: "#1A1A1D",
             marginBottom: 15,
             borderRadius: 10,
             cursor: "pointer"
           }}
+          className="card"
         >
-          <h3>{event.name}</h3>
+          <h3 className="text-secondary">{event.name}</h3>
           <p>{event.location}</p>
           <p>{event.date}</p>
         </div>

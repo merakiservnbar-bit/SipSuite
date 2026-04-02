@@ -30,7 +30,7 @@ export default function LoginPage() {
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <button onClick={login}>Login</button>
+      <button onClick={login} className="btn-primary">Login</button>
     </div>
   );
 }

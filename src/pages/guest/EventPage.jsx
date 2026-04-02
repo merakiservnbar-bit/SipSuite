@@ -71,6 +71,11 @@ export default function EventPage() {
       return;
     }
 
+    if (item.is_available === false) {
+      alert("This item is currently unavailable");
+      return;
+    }
+
     try {
       const docRef = await addDoc(collection(db, "orders"), {
         event_id: eventId,
@@ -106,32 +111,29 @@ export default function EventPage() {
 
     <div style={{ padding: 20 }}>
 
-      <h1 style={{ marginBottom: 20 }}>Menu</h1>
+      <h1 className="page-title">Menu</h1>
 
-      {menu
-        .filter(item => item.is_available !== false)
-        .map(item => (
-          <Card key={item.id}>
-            <p style={{ fontSize: 18 }}>{item.name}</p>
-
-            <Button onClick={() => placeOrder(item)}>
-              Add
-            </Button>
-          </Card>
-        )
-      )}
-
-      <h2>Select Pickup Bar</h2>
-
-      <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-        {bars.map(bar => (
-          <Button
-            key={bar.id}
-            variant={selectedBar === bar.id ? "primary" : "secondary"}
-            onClick={() => setSelectedBar(bar.id)}
+      <div className="menu-grid">
+        {menu.map(item => (
+          <div
+            key={item.id}
+            className={`menu-card ${
+              item.is_available === false ? "unavailable" : ""
+            }`}
           >
-            {bar.name}
-          </Button>
+            <div className="menu-name">{item.name}</div>
+
+            {item.is_available === false ? (
+              <span className="badge">Unavailable</span>
+            ) : (
+              <button
+                className="btn-primary"
+                onClick={() => placeOrder(item)}
+              >
+                Add
+              </button>
+            )}
+          </div>
         ))}
       </div>
     </div>

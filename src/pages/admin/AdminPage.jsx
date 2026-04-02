@@ -204,7 +204,7 @@ export default function AdminPage() {
                 <input type="date" onChange={e => setDate(e.target.value)} />
                 <input type="time" onChange={e => setStartTime(e.target.value)} />
                 <input type="time" onChange={e => setEndTime(e.target.value)} />
-                <button onClick={createEvent}>Create</button>
+                <button onClick={createEvent} className="btn-primary">Create</button>
             </Section>
 
             <Section title="Bars">
@@ -213,7 +213,7 @@ export default function AdminPage() {
                     value={barName}
                     onChange={(e) => setBarName(e.target.value)}
                 />
-                <button onClick={createBar} style={{ marginLeft: 10 }}>
+                <button onClick={createBar} style={{ marginLeft: 10 }} className="btn-primary">
                     Add
                 </button>
 
@@ -235,6 +235,7 @@ export default function AdminPage() {
                             setEditingBarId(bar.id);
                             setEditBarValue(bar.name);
                             }}
+                            className="btn-primary"
                         >
                             Edit
                         </button>
@@ -253,15 +254,15 @@ export default function AdminPage() {
 
             <Section title="Menu">
 
-                <button onClick={() => setSelectedEventId(null)}>
+                <button onClick={() => setSelectedEventId(null)} className="btn-primary">
                     ← Back to Events
-                </button>
+                </button >
                 <input
                     placeholder="Drink name"
                     value={drinkName}
                     onChange={(e) => setDrinkName(e.target.value)}
                 />
-                <button onClick={createMenuItem} style={{ marginLeft: 10 }}>
+                <button onClick={createMenuItem} style={{ marginLeft: 10 }} className="btn-primary">
                     Add
                 </button>
 
@@ -281,7 +282,7 @@ export default function AdminPage() {
                             value={editValue}
                             onChange={(e) => setEditValue(e.target.value)}
                             />
-                            <button onClick={() => updateMenuItem(item.id)}>Save</button>
+                            <button onClick={() => updateMenuItem(item.id)} className="btn-primary">Save</button>
                         </>
                         ) : (
                         <>
@@ -293,6 +294,7 @@ export default function AdminPage() {
                                 setEditingItemId(item.id);
                                 setEditValue(item.name);
                                 }}
+                                className="btn-primary"
                             >
                                 Edit
                             </button>

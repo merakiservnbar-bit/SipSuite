@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { db } from "../../services/firebase";
 import {
   collection,
@@ -12,100 +12,207 @@ import Card from "../ui/Card";
 import { useAuth } from "../../context/AuthContext";
 
 export default function LiveOrders({ eventId }) {
-  const { staff } = useAuth();
-  const bartenderId = staff?.id;
+    const { staff } = useAuth();
+    const bartenderId = staff?.id;
 
-  const [orders, setOrders] = useState([]);
-  const [assignedBars, setAssignedBars] = useState([]);
+    const [orders, setOrders] = useState([]);
+    const [assignedBars, setAssignedBars] = useState([]);
 
-  // 🔥 FETCH BARS
-  useEffect(() => {
-    if (!bartenderId || !eventId) return;
+    const formatTime = (ms) => {
+        const totalSeconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
 
-    const fetchBars = async () => {
-      const snapshot = await getDocs(collection(db, "bars"));
+        return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+        };
 
-      const data = snapshot.docs
-        .map(doc => ({ id: doc.id, ...doc.data() }))
-        .filter(bar =>
-          (bar.staff_ids || []).includes(bartenderId) &&
-          bar.event_id === eventId
-        );
+        const getWaitTime = (order) => {
+        const end = order.completed_at || Date.now();
+        return formatTime(end - order.created_at);
+        };
 
-      setAssignedBars(data);
+        const getPrepTime = (order) => {
+        if (!order.started_at) return "0:00";
+
+        const end = order.completed_at || Date.now();
+        return formatTime(end - order.started_at);
     };
 
-    fetchBars();
-  }, [bartenderId, eventId]);
+    const prevOrderCount = useRef(0);
+    const audio = new Audio("/notification.mp3");
 
-  // 🔥 LIVE ORDERS
-  useEffect(() => {
-    if (assignedBars.length === 0) return;
+    const [, setTick] = useState(0);
 
-    const unsubscribe = onSnapshot(
-      collection(db, "orders"),
-      (snapshot) => {
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTick(t => t + 1);
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    // 🔥 FETCH BARS
+    useEffect(() => {
+        if (!bartenderId || !eventId) return;
+
+        const fetchBars = async () => {
+        const snapshot = await getDocs(collection(db, "bars"));
+
         const data = snapshot.docs
-          .map(doc => ({ id: doc.id, ...doc.data() }))
-          .filter(order =>
-            order.event_id === eventId &&
-            assignedBars.some(bar => bar.id === order.bar_id)
-          );
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(bar =>
+            (bar.staff_ids || []).includes(bartenderId) &&
+            bar.event_id === eventId
+            );
 
-        setOrders(data);
-      }
+        setAssignedBars(data);
+        };
+
+        fetchBars();
+    }, [bartenderId, eventId]);
+
+    // 🔥 LIVE ORDERS
+    useEffect(() => {
+        if (assignedBars.length === 0) return;
+
+        const unsubscribe = onSnapshot(
+            collection(db, "orders"),
+            (snapshot) => {
+                const data = snapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data() }))
+                .filter(order =>
+                    order.event_id === eventId &&
+                    assignedBars.some(bar => bar.id === order.bar_id)
+                );
+
+                const activeOrders = data.filter(
+                    o => o.status === "pending" || o.status === "in_progress"
+                );
+
+                const wasEmpty = prevOrderCount.current === 0;
+                const isNowNotEmpty = activeOrders.length > 0;
+
+                if (wasEmpty && isNowNotEmpty) {
+                    audio.play().catch(() => {});
+                }
+
+                prevOrderCount.current = activeOrders.length;
+
+                setOrders(data);
+            }
+        );
+
+        return () => unsubscribe();
+    }, [assignedBars, eventId]);
+
+    const updateStatus = async (order, newStatus) => {
+        const updateData = {
+            status: newStatus
+        };
+
+        if (newStatus === "in_progress") {
+            updateData.started_at = Date.now();
+        }
+
+        if (newStatus === "ready") {
+            updateData.completed_at = Date.now();
+        }
+
+        await updateDoc(doc(db, "orders", order.id), updateData);
+    };
+
+     const isRecentReady = (order) => {
+        if (order.status !== "ready") return true;
+
+        const now = Date.now();
+        const fiveMinutes = 5 * 60 * 1000;
+
+        return now - order.completed_at < fiveMinutes;
+    };
+
+    const pending = orders.filter(o => o.status === "pending");
+    const inProgress = orders.filter(o => o.status === "in_progress");
+    const ready = orders.filter(
+        o => o.status === "ready" && isRecentReady(o)
     );
+    const getUrgency = (order) => {
+        const wait = Date.now() - order.created_at;
 
-    return () => unsubscribe();
-  }, [assignedBars, eventId]);
+        if (wait > 180000) return "high";     // 3+ min
+        if (wait > 60000) return "medium";    // 1–3 min
+        return "low";
+    };
 
-  const updateStatus = async (id, newStatus) => {
-    await updateDoc(doc(db, "orders", id), {
-      status: newStatus
-    });
-  };
+    const renderOrder = (order, type) => {
+        return (
+            <div
+            key={order.id}
+            className={`order-card ${getUrgency(order)}`}
+            >
+            <div className="order-header">
+                <span className="order-number">
+                #{order.order_number}
+                </span>
+            </div>
 
-  const pending = orders.filter(o => o.status === "pending");
-  const inProgress = orders.filter(o => o.status === "in_progress");
-  const ready = orders.filter(o => o.status === "ready");
+            <div className="order-items">
+                {order.items.map((i, idx) => (
+                <div key={idx}>{i.name}</div>
+                ))}
+            </div>
 
-  return (
-    <div style={{ display: "flex", gap: 20 }}>
-      <div style={{ flex: 1 }}>
-        <h2>Pending</h2>
-        {pending.map(order => (
-          <Card key={order.id}>
-            <p>#{order.order_number}</p>
-            <p>{order.items[0].name}</p>
-            <Button onClick={() => updateStatus(order.id, "in_progress")}>
-              Start
-            </Button>
-          </Card>
-        ))}
-      </div>
+            <div className="order-timer">
+                ⏱ {getWaitTime(order)} / {getPrepTime(order)}
+            </div>
 
-      <div style={{ flex: 1 }}>
-        <h2>In Progress</h2>
-        {inProgress.map(order => (
-          <Card key={order.id}>
-            <p>#{order.order_number}</p>
-            <p>{order.items[0].name}</p>
-            <Button onClick={() => updateStatus(order.id, "ready")}>
-              Ready
-            </Button>
-          </Card>
-        ))}
-      </div>
+            {type === "pending" && (
+                <button
+                className="btn-primary"
+                onClick={() => updateStatus(order, "in_progress")}
+                >
+                Start
+                </button>
+            )}
 
-      <div style={{ flex: 1 }}>
-        <h2>Ready</h2>
-        {ready.map(order => (
-          <Card key={order.id}>
-            <p>#{order.order_number}</p>
-            <p>{order.items[0].name}</p>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
+            {type === "in_progress" && (
+                <button
+                className="btn-primary"
+                onClick={() => updateStatus(order, "ready")}
+                >
+                Ready
+                </button>
+            )}
+            </div>
+        );
+    };
+
+    return (
+        <div className="live-orders-container">
+            <div className="live-orders-header">
+            <h1>Live Orders</h1>
+            </div>
+
+            <div className="columns">
+
+                {/* PENDING */}
+                <div className="column">
+                    <h2 className="column-title">Pending</h2>
+                    {pending.map(order => renderOrder(order, "pending"))}
+                </div>
+
+                {/* IN PROGRESS */}
+                <div className="column">
+                    <h2 className="column-title">In Progress</h2>
+                    {inProgress.map(order => renderOrder(order, "in_progress"))}
+                </div>
+
+                {/* READY */}
+                <div className="column">
+                    <h2 className="column-title">Ready</h2>
+                    {ready.map(order => renderOrder(order, "ready"))}
+                </div>
+
+            </div>
+        </div>
+    );
 }
