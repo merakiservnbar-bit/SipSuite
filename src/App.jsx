@@ -10,6 +10,7 @@ import StaffPage from "./pages/admin/StaffPage";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AppLayout from "./layouts/AppLayout";
+import OrderHistoryPage from "./pages/bartender/OrderHistoryPage";
 
 function App() {
   return (
