@@ -11,6 +11,7 @@ import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AppLayout from "./layouts/AppLayout";
 import OrderHistoryPage from "./pages/bartender/OrderHistoryPage";
+import AnalyticsPage from "./pages/bartender/AnalyticsPage";
 
 function App() {
   return (
