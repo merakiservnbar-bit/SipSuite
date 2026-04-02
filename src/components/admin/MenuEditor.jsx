@@ -131,8 +131,10 @@ export default function MenuEditor({ eventId }) {
           <option key={d.id} value={d.id}>
             {d.name}
           </option>
+          <button className="btn-secondary" onClick={() => createMenuItem(item.id)}>Add Drink</button>
         ))}
       </select>
+      
 
       {menuItems.map(item => (
         <div key={item.id}>
