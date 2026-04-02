@@ -16,7 +16,7 @@ export default function AdminLayout() {
             ☰
           </button>
 
-          <Logo variant="icon" size={36} />
+          <Logo variant="icon" size={60} />
         </div>
       </div>
 

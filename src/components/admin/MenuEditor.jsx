@@ -7,7 +7,9 @@ import {
   deleteDoc,
   doc,
   updateDoc,
-  onSnapshot
+  onSnapshot,
+  query,
+  where
 } from "firebase/firestore";
 
 export default function MenuEditor({ eventId }) {
@@ -23,24 +25,36 @@ export default function MenuEditor({ eventId }) {
   useEffect(() => {
     if (!eventId) return;
 
-    const fetchData = async () => {
-      const barsSnap = onSnapshot(collection(db, "bars"));
-      const menuSnap = onSnapshot(collection(db, "menu_items"));
+    const barsQuery = query(
+      collection(db, "bars"),
+      where("event_id", "==", eventId)
+    );
 
-      setBars(
-        barsSnap.docs
-          .map(doc => ({ id: doc.id, ...doc.data() }))
-          .filter(b => b.event_id === eventId)
-      );
+    const menuQuery = query(
+      collection(db, "menu_items"),
+      where("event_id", "==", eventId)
+    );
 
-      setMenuItems(
-        menuSnap.docs
-          .map(doc => ({ id: doc.id, ...doc.data() }))
-          .filter(m => m.event_id === eventId)
-      );
+    const unsubscribeBars = onSnapshot(barsQuery, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setBars(data);
+    });
+
+    const unsubscribeMenu = onSnapshot(menuQuery, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setMenuItems(data);
+    });
+
+    return () => {
+      unsubscribeBars();
+      unsubscribeMenu();
     };
-
-    fetchData();
   }, [eventId]);
 
   // 🔥 CREATE
@@ -65,7 +79,6 @@ export default function MenuEditor({ eventId }) {
     if (!window.confirm("Delete this drink?")) return;
 
     await deleteDoc(doc(db, "menu_items", id));
-    setMenuItems(prev => prev.filter(i => i.id !== id));
   };
 
   // 🔥 UPDATE

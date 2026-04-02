@@ -79,97 +79,80 @@ export default function EventOverview({ eventId }) {
 
     return (
         <div>
-        {isEditing ? (
-            <>
-                <input
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
+        return (
+            <div className="event-overview-grid">
 
-                <input
-                value={form.location}
-                onChange={(e) => setForm({ ...form, location: e.target.value })}
-                />
+                {/* EVENT DETAILS */}
+                <div className="card">
+                {isEditing ? (
+                    <>
+                    <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                    <input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
+                    <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
+                    <input type="time" value={form.start_time} onChange={(e) => setForm({ ...form, start_time: e.target.value })} />
+                    <input type="time" value={form.end_time} onChange={(e) => setForm({ ...form, end_time: e.target.value })} />
 
-                <input
-                type="date"
-                value={form.date}
-                onChange={(e) => setForm({ ...form, date: e.target.value })}
-                />
+                    <div className="button-row">
+                        <button onClick={updateEvent} className="btn-primary">Save</button>
+                        <button onClick={() => setIsEditing(false)} className="btn-danger">Cancel</button>
+                    </div>
+                    </>
+                ) : (
+                    <>
+                    <h2>{event.name}</h2>
+                    <p>{event.location}</p>
+                    <p>{event.date} • {event.start_time} - {event.end_time}</p>
 
-                <input
-                type="time"
-                value={form.start_time}
-                onChange={(e) => setForm({ ...form, start_time: e.target.value })}
-                />
+                    <div className="button-row">
+                        <button onClick={() => setIsEditing(true)} className="btn-primary">
+                        Edit
+                        </button>
 
-                <input
-                type="time"
-                value={form.end_time}
-                onChange={(e) => setForm({ ...form, end_time: e.target.value })}
-                />
+                        <button onClick={handleDelete} className="btn-danger">
+                        Delete
+                        </button>
+                    </div>
+                    </>
+                )}
+                </div>
 
-                <button onClick={updateEvent} className="btn-primary">Save</button>
-                <button onClick={() => setIsEditing(false)} style={{backgroundColor:"red", color:"white"}}>Cancel</button>
-            </>
-            ) : (
-            <>
-                <h2>{event.name}</h2>
-                <p>{event.location}</p>
-                <p>
-                {event.date} • {event.start_time} - {event.end_time}
-                </p>
+                {/* QR CARD */}
+                <div className="card">
+                <QRCodeDisplay eventId={eventId} />
 
-                <button onClick={() => setIsEditing(true)} className="btn-primary">
-                Edit Event
-                </button>
-            </>
-        )}
+                <div className="button-row">
+                    <button onClick={() => window.print()} className="btn-primary">Print</button>
 
-        <button
-            className="btn-danger"
-            onClick={handleDelete}
-        >
-            Delete Event
-        </button>
+                    <button
+                    onClick={() =>
+                        navigator.clipboard.writeText(
+                        `https://sip-suite.vercel.app/event/${eventId}`
+                        )
+                    }
+                    className="btn-primary"
+                    >
+                    Copy Link
+                    </button>
 
-        <div style={{ marginTop: 30 }}>
-            <QRCodeDisplay eventId={eventId} />
-        </div>
+                    <button
+                    onClick={() => {
+                        const canvas = document.getElementById("qr-code");
+                        const url = canvas.toDataURL("image/png");
 
-        <div style={{ marginTop: 20 }}>
-            <button onClick={() => window.print()} className="btn-primary">
-            Print QR
-            </button>
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = "qr-code.png";
+                        a.click();
+                    }}
+                    className="btn-primary"
+                    >
+                    Download
+                    </button>
+                </div>
+                </div>
 
-            <button
-                onClick={() => {
-                    navigator.clipboard.writeText(
-                    `https://sip-suite.vercel.app/event/${eventId}`
-                    );
-                }}
-                style={{ marginLeft: 10 }}
-                className="btn-primary"
-            >
-            Copy Link
-            </button>
-
-            <button
-                onClick={() => {
-                    const canvas = document.getElementById("qr-code");
-                    const url = canvas.toDataURL("image/png");
-
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = "qr-code.png";
-                    a.click();
-                }}
-                style={{marginLeft:10}}
-                className="btn-primary"
-            >
-                Download QR
-            </button>
-        </div>
+            </div>
+            );
         </div>
     );
 }

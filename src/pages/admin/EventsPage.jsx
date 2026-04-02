@@ -85,14 +85,28 @@ export default function EventsPage() {
 
       <div className="event-grid">
         {events.map(event => (
-          <div
-            key={event.id}
-            className="event-card"
-            onClick={() => navigate(`/admin/events/${event.id}`)}
-          >
-            <h3>{event.name}</h3>
-            <p className="text-secondary">{event.location}</p>
-            <p className="text-muted">{event.date}</p>
+          <div className="event-card">
+
+            <div onClick={() => navigate(`/admin/events/${event.id}`)}>
+              <h3>{event.name}</h3>
+              <p>{event.location}</p>
+            </div>
+
+            <button
+              className="btn-danger"
+              onClick={(e) => {
+                e.stopPropagation();
+
+                if (!confirm("Delete event?")) return;
+
+                deleteDoc(doc(db, "events", event.id));
+
+                setEvents(prev => prev.filter(e => e.id !== event.id));
+              }}
+            >
+              Delete
+            </button>
+
           </div>
         ))}
       </div>
