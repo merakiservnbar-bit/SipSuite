@@ -47,6 +47,8 @@ export default function EventPage() {
     if (!eventId) return;
 
     const fetchBars = async () => {
+      console.log("EVENT ID:", eventId);
+
       const q = query(
         collection(db, "bars"),
         where("event_id", "==", eventId)
@@ -54,10 +56,14 @@ export default function EventPage() {
 
       const snapshot = await getDocs(q);
 
+      console.log("BARS SNAPSHOT:", snapshot.docs);
+
       const data = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+
+      console.log("BARS DATA:", data);
 
       setBars(data);
     };
