@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import LiveOrders from "../../components/bartender/LiveOrders";
@@ -9,33 +9,49 @@ export default function BartenderLivePage() {
   const { staff } = useAuth();
 
   const [tab, setTab] = useState("orders");
+  const navigate = useNavigate();
 
   return (
     <div style={{ padding: 20 }}>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h1>Event</h1>
+      <div className="live-header">
+        <h1>Live Event</h1>
         <p className="text-secondary">{staff?.name}</p>
       </div>
 
-      <div style={{ display: "flex", gap: 20 }}>
-        <button onClick={() => setTab("orders")}  className="btn-secondary">Live Orders</button>
-        <button onClick={() => setTab("menu")} className="btn-secondary">Menu</button>
+      <div className="tabs">
+
+        <button
+          onClick={() => setTab("orders")}
+          className={tab === "orders" ? "tab active" : "tab"}
+        >
+          Live Orders
+        </button>
+
+        <button
+          onClick={() => setTab("menu")}
+          className={tab === "menu" ? "tab active" : "tab"}
+        >
+          Menu
+        </button>
+
         <button
           onClick={() =>
             navigate(`/bartender/events/${eventId}/history`)
           }
-          className="btn-secondary"
+          className="tab"
         >
-          View History
+          History
         </button>
+
         <button
           onClick={() =>
             navigate(`/bartender/events/${eventId}/analytics`)
           }
-          className="btn-secondary"
+          className="tab"
         >
           Analytics
         </button>
+
       </div>
 
       {tab === "orders" && <LiveOrders eventId={eventId} />}

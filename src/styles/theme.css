@@ -322,3 +322,10 @@ body {
   margin-top: 15px;
   flex-wrap: wrap;
 }
+
+.live-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
