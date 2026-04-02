@@ -22,12 +22,17 @@ export default function EventsPage() {
   }, []);
 
   const handleCreateEvent = async () => {
-    await addDoc(collection(db, "events"), {
+    const docRef = await addDoc(collection(db, "events"), {
       name: "New Event",
       location: "",
       date: "",
       created_at: Date.now()
     });
+
+    setEvents(prev => [
+      { id: docRef.id, name: "New Event", location: "", date: "" },
+      ...prev
+    ]);
   };
 
   return (

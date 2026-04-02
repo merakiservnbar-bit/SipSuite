@@ -1,43 +1,39 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { useState } from "react";
 import Logo from "../components/ui/Logo";
 
 export default function AdminLayout() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [open, setOpen] = useState(false);
+  const location = useLocation();
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
-      
-      {/* SIDEBAR */}
-      <div
-        className={`admin-sidebar ${collapsed ? "collapsed" : ""}`}
-      >
-        {/* TOP SECTION */}
-        <div className="sidebar-header">
-          <button
-            className="hamburger"
-            onClick={() => setCollapsed(!collapsed)}
-          >
+    <div style={{ minHeight: "100vh", background: "#0B1220" }}>
+
+      {/* NAVBAR */}
+      <div className="navbar">
+        <div className="nav-left">
+          <button className="hamburger" onClick={() => setOpen(true)}>
             ☰
           </button>
 
-          {!collapsed && <Logo type="wordmark" size={28} />}
+          <Logo variant="icon" size={36} />
+        </div>
+      </div>
+
+      {/* SIDEBAR OVERLAY */}
+      <div className={`sidebar-overlay ${open ? "show" : ""}`} onClick={() => setOpen(false)} />
+
+      {/* SIDEBAR */}
+      <div className={`sidebar ${open ? "open" : ""}`}>
+        <div className="sidebar-header">
+          <Logo variant="wordmark" size={28} />
         </div>
 
-        {/* NAV LINKS */}
         <div className="sidebar-links">
-          <Link to="/admin">{!collapsed && "Events"}</Link>
-          <Link to="/admin/drinks">{!collapsed && "Drink Database"}</Link>
-          <Link to="/admin/staff">{!collapsed && "Staff"}</Link>
+          <Link className={location.pathname === "/admin" ? "active" : ""} to="/admin">Events</Link>
+          <Link className={location.pathname.includes("/drinks") ? "active" : ""} to="/admin/drinks">Drink Database</Link>
+          <Link className={location.pathname.includes("/staff") ? "active" : ""} to="/admin/staff">Staff</Link>
         </div>
-
-        {/* FOOTER */}
-        {!collapsed && (
-          <div className="sidebar-footer">
-            <p>Meraki Bartending</p>
-            <p className="text-muted">email@email.com</p>
-          </div>
-        )}
       </div>
 
       {/* CONTENT */}
