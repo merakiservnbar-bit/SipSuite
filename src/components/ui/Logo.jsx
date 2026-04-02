@@ -1,5 +1,6 @@
 import logo from "../../assets/sipsuite-logo-full.png";
 import icon from "../../assets/sipsuite-icon-only.png";
+import wordmark from "../../assets/sipsuite-wordmark-only.png"
 
 export default function Logo({ type = "full", size = 40 }) {
   const src = type === "icon" ? icon : logo;

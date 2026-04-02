@@ -10,7 +10,6 @@ export default function AppLayout() {
       <div className="navbar">
         <div onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
           <Logo type="icon" size={32} />
-          <h1>☰</h1>
         </div>
 
         <div className="nav-links">

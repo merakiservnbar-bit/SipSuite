@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { db } from "../../services/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, addDoc } from "firebase/firestore";
 import EventCard from "../../components/EventCard";
 import { useNavigate } from "react-router-dom";
 
@@ -21,11 +21,20 @@ export default function EventsPage() {
     fetchEvents();
   }, []);
 
+  const handleCreateEvent = async () => {
+    await addDoc(collection(db, "events"), {
+      name: "New Event",
+      location: "",
+      date: "",
+      created_at: Date.now()
+    });
+  };
+
   return (
     <div>
       <h1 className="page-title">Events</h1>
 
-      <button className="btn-primary">+ New Event</button>
+      <button className="btn-primary" onClick={handleCreateEvent}>+ New Event</button>
 
       <input placeholder="Search events..." />
 
