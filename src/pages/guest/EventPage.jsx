@@ -114,7 +114,6 @@ export default function EventPage() {
   }
 
   return (
-
     <div style={{ padding: 20 }}>
 
       <h1 className="page-title">Menu</h1>
@@ -142,6 +141,26 @@ export default function EventPage() {
           </div>
         ))}
       </div>
+
+      {/* 🔥 ADD THIS BLOCK */}
+      <h2 className="page-title" style={{ marginTop: 30 }}>
+        Select Pickup Bar
+      </h2>
+
+      <div className="bar-selector">
+        {bars.map(bar => (
+          <button
+            key={bar.id}
+            className={`bar-btn ${
+              selectedBar === bar.id ? "active" : ""
+            }`}
+            onClick={() => setSelectedBar(bar.id)}
+          >
+            {bar.name}
+          </button>
+        ))}
+      </div>
+
     </div>
   );
 }

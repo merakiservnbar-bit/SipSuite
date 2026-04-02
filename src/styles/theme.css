@@ -255,3 +255,23 @@ body {
   color: #C8A96A;
   font-weight: 600;
 }
+
+.bar-selector {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.bar-btn {
+  background: #1F2937;
+  color: #F9FAFB;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.bar-btn.active {
+  background: #C8A96A;
+  color: black;
+}
