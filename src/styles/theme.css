@@ -89,19 +89,6 @@ body {
   margin-bottom: 10px;
 }
 
-.order-card.low {
-  border: 1px solid #1F2937;
-}
-
-.order-card.medium {
-  border: 1px solid orange;
-}
-
-.order-card.high {
-  border: 1px solid red;
-  background: #2a0000;
-}
-
 .navbar {
   height: 60px;
   background: #111827;

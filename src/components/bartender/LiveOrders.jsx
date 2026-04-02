@@ -24,17 +24,25 @@ export default function LiveOrders({ eventId }) {
         const seconds = totalSeconds % 60;
 
         return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-        };
+    };
 
-        const getWaitTime = (order) => {
-        const end = order.completed_at || Date.now();
+    const getWaitTime = (order) => {
+        const end =
+            order.status === "ready"
+            ? order.completed_at
+            : Date.now();
+
         return formatTime(end - order.created_at);
-        };
+    };
 
-        const getPrepTime = (order) => {
+    const getPrepTime = (order) => {
         if (!order.started_at) return "0:00";
 
-        const end = order.completed_at || Date.now();
+        const end =
+            order.status === "ready"
+            ? order.completed_at
+            : Date.now();
+
         return formatTime(end - order.started_at);
     };
 
@@ -42,6 +50,30 @@ export default function LiveOrders({ eventId }) {
     const audio = new Audio("/notification.mp3");
 
     const [, setTick] = useState(0);
+
+    const getWaitBackground = (order) => {
+        if (order.status === "ready") return "#111827";
+
+        const wait = Date.now() - order.created_at;
+
+        if (wait > 180000) return "#3b0000"; // deep red
+        if (wait > 60000) return "#3a2a00";  // amber
+
+        return "#111827";
+    };
+
+    const getPrepBorder = (order) => {
+        if (order.status === "ready") return "1px solid #1F2937";
+
+        if (!order.started_at) return "1px solid #1F2937";
+
+        const prep = Date.now() - order.started_at;
+
+        if (prep > 120000) return "2px solid red";
+        if (prep > 60000) return "2px solid orange";
+
+        return "1px solid #1F2937";
+    };
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -135,53 +167,50 @@ export default function LiveOrders({ eventId }) {
     const ready = orders.filter(
         o => o.status === "ready" && isRecentReady(o)
     );
-    const getUrgency = (order) => {
-        const wait = Date.now() - order.created_at;
-
-        if (wait > 180000) return "high";     // 3+ min
-        if (wait > 60000) return "medium";    // 1–3 min
-        return "low";
-    };
 
     const renderOrder = (order, type) => {
         return (
             <div
-            key={order.id}
-            className={`order-card ${getUrgency(order)}`}
+                key={order.id}
+                className="order-card"
+                style={{
+                    background: getWaitBackground(order),
+                    border: getPrepBorder(order)
+                }}
             >
-            <div className="order-header">
-                <span className="order-number">
-                #{order.order_number}
-                </span>
-            </div>
+                <div className="order-header">
+                    <span className="order-number">
+                    #{order.order_number}
+                    </span>
+                </div>
 
-            <div className="order-items">
-                {order.items.map((i, idx) => (
-                <div key={idx}>{i.name}</div>
-                ))}
-            </div>
+                <div className="order-items">
+                    {order.items.map((i, idx) => (
+                    <div key={idx}>{i.name}</div>
+                    ))}
+                </div>
 
-            <div className="order-timer">
-                ⏱ {getWaitTime(order)} / {getPrepTime(order)}
-            </div>
+                <div className="order-timer">
+                    ⏱ {getWaitTime(order)} / {getPrepTime(order)}
+                </div>
 
-            {type === "pending" && (
-                <button
-                className="btn-primary"
-                onClick={() => updateStatus(order, "in_progress")}
-                >
-                Start
-                </button>
-            )}
+                {type === "pending" && (
+                    <button
+                    className="btn-primary"
+                    onClick={() => updateStatus(order, "in_progress")}
+                    >
+                    Start
+                    </button>
+                )}
 
-            {type === "in_progress" && (
-                <button
-                className="btn-primary"
-                onClick={() => updateStatus(order, "ready")}
-                >
-                Ready
-                </button>
-            )}
+                {type === "in_progress" && (
+                    <button
+                    className="btn-primary"
+                    onClick={() => updateStatus(order, "ready")}
+                    >
+                    Ready
+                    </button>
+                )}
             </div>
         );
     };
