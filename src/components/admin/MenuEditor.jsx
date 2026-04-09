@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { db } from "../../services/firebase";
 import {
   collection,
-  getDocs,
   addDoc,
   deleteDoc,
   doc,
@@ -72,13 +71,15 @@ export default function MenuEditor({ eventId }) {
     if (!selected) return;
 
     await addDoc(collection(db, "menu_items"), {
-      drink_id: selected.id,        // 🔥 IMPORTANT
+      drink_id: selected.id,
       name: selected.name,
       category: selected.category,
       event_id: eventId,
       price: 0,
       is_available: true
     });
+
+    setDrinkName(""); // 🔥 reset dropdown
   };
 
   // 🔥 DELETE
@@ -93,12 +94,6 @@ export default function MenuEditor({ eventId }) {
     await updateDoc(doc(db, "menu_items", id), {
       name: editValue
     });
-
-    setMenuItems(prev =>
-      prev.map(item =>
-        item.id === id ? { ...item, name: editValue } : item
-      )
-    );
 
     setEditingItemId(null);
   };
@@ -122,18 +117,34 @@ export default function MenuEditor({ eventId }) {
     <div>
       <h2>Menu</h2>
 
-      <select
-        onChange={(e) => setDrinkName(e.target.value)}
-      >
-        <option value="">Select Drink</option>
+      <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+        <select
+          value={drinkName}
+          onChange={(e) => setDrinkName(e.target.value)}
+        >
+          <option value="">Select Drink</option>
 
-        {drinks.map(d => (
-          <option key={d.id} value={d.id}>
-            {d.name}
-          </option>
-          <button className="btn-secondary" onClick={() => createMenuItem(item.id)}>Add Drink</button>
-        ))}
-      </select>
+          {drinks.map(d => (
+            <option key={d.id} value={d.id}>
+              {d.name}
+            </option>
+          ))}
+        </select>
+
+        <button
+          className="btn-primary"
+          onClick={createMenuItem}
+          disabled={!drinkName}
+          style={{
+            opacity: !drinkName ? 0.5 : 1,
+            cursor: !drinkName ? "not-allowed" : "pointer",
+            width: "auto",
+            padding: "8px 16px"
+          }}
+        >
+          Add
+        </button>
+      </div>
       
 
       {menuItems.map(item => (
